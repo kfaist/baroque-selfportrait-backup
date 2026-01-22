@@ -1056,6 +1056,7 @@ async function start() {
         document.getElementById('startBtn').style.display = 'none';
         document.getElementById('stopBtn').style.display = 'block';
         startPolling();
+        startSessionTimer();
     } catch (e) {
         log(`ERROR: ${e.message}`, 'error');
         console.error(e);
@@ -1226,10 +1227,6 @@ function startSessionTimer() {
 }
 
 // Auto-start timer when stream starts
-const origStart = window.start || start;
-window.start = async function() {
-    await origStart();
-    startSessionTimer();
 };
 </body>
 </html>
