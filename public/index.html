@@ -1,5 +1,5 @@
-<!-- deploy-v4-diagnostics -->
-<!-- v4-enhanced-diagnostics -->
+<!-- deploy-v5-turn-servers -->
+<!-- v5-TURN-servers-ice-restart -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -217,9 +217,20 @@ async function connectWHIP(whipUrl) {
     inputPC = new RTCPeerConnection({
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' }
-        ]
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' },
+            { urls: 'stun:stun3.l.google.com:19302' },
+            // Free TURN servers for NAT traversal
+            { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+            { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+            { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+        ],
+        iceCandidatePoolSize: 10
     });
+    
+    // ICE restart on disconnect
+    let iceRestartAttempts = 0;
+    const MAX_ICE_RESTARTS = 3;
     
     inputPC.oniceconnectionstatechange = () => {
         const state = inputPC.iceConnectionState;
@@ -230,13 +241,30 @@ async function connectWHIP(whipUrl) {
             document.getElementById('inputStatus').className = 'status-badge connected';
             document.getElementById('inputStatus').textContent = 'STREAMING';
             setStage(3, 'complete');
+            iceRestartAttempts = 0; // Reset on successful connection
         } else if (state === 'checking') {
             document.getElementById('inputStatus').className = 'status-badge connecting';
             document.getElementById('inputStatus').textContent = 'CONNECTING...';
-        } else if (state === 'disconnected' || state === 'failed') {
+        } else if (state === 'disconnected') {
+            document.getElementById('inputStatus').className = 'status-badge connecting';
+            document.getElementById('inputStatus').textContent = 'RECONNECTING...';
+            log('ICE disconnected - attempting restart...', 'warn');
+            
+            // Try ICE restart
+            if (iceRestartAttempts < MAX_ICE_RESTARTS) {
+                iceRestartAttempts++;
+                log(`ICE restart attempt ${iceRestartAttempts}/${MAX_ICE_RESTARTS}`, 'info');
+                setTimeout(() => {
+                    if (inputPC && inputPC.iceConnectionState === 'disconnected') {
+                        inputPC.restartIce();
+                    }
+                }, 2000);
+            }
+        } else if (state === 'failed') {
             document.getElementById('inputStatus').className = 'status-badge disconnected';
-            document.getElementById('inputStatus').textContent = state.toUpperCase();
+            document.getElementById('inputStatus').textContent = 'FAILED';
             setStage(3, 'error');
+            log('ICE failed - connection cannot be established', 'error');
         }
     };
     
