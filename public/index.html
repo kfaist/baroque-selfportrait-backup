@@ -1,4 +1,4 @@
-<!-- deploy-v5-wait-for-live -->
+<!-- deploy-v6-sdxl-turbo -->
 <!-- v5: Only connect HLS when AI is outputting (live=1) -->
 <!DOCTYPE html>
 <html>
@@ -111,8 +111,7 @@
 <script>
 const API_KEY = 'sk_wdNUnsKxxwH6v64BHMwHaWT39Mhwk5ZrqZzXDRmAXxxAqCgVGusff2Y8jxiBofuP';
 const API_BASE = 'https://api.daydream.live/v1';
-// Using SDXL-turbo - SD-turbo has capacity issues per Daydream Discord (Jan 28, 2026)
-const PIPELINE_ID = 'pip_SDXL-turbo';
+const PIPELINE_ID = 'pip_qpUgXycjWF6YMeSL';
 
 let localStream, inputPC, streamId, playbackId, hls;
 let pollTimer, statsTimer, elapsedTimer;
@@ -311,12 +310,13 @@ async function updateStats() {
 
 async function setParams() {
     const body = {
+        model_id: "streamdiffusion",
+        pipeline: "live-video-to-video",
         params: {
             model_id: "stabilityai/sdxl-turbo",
             prompt: "baroque oil painting, dramatic chiaroscuro, Rembrandt style, golden light, rich textures",
             negative_prompt: "blurry, low quality, modern, digital",
-            num_inference_steps: 4,
-            guidance_scale: 0,
+            num_inference_steps: 25,
             seed: 42
         }
     };
