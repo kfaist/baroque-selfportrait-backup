@@ -354,12 +354,15 @@ function startPolling() {
                 setStage(4, 'complete');
                 
                 if (!hlsConnected) {
-                    log('AI is outputting video - connecting HLS!', 'success');
+                    log('AI is outputting video - waiting for HLS manifest...', 'success');
                     hlsConnected = true;
-                    const hlsUrl = data.meta?.source?.find(s => s.hrn === 'HLS (TS)')?.url 
-                              || `https://livepeercdn.studio/hls/${playbackId}/index.m3u8`;
-                    log(`HLS URL: ${hlsUrl}`, 'info');
-                    connectHLS(hlsUrl);
+                    // Wait 3 seconds for HLS manifest to be ready
+                    setTimeout(() => {
+                        const hlsUrl = data.meta?.source?.find(s => s.hrn === 'HLS (TS)')?.url 
+                                  || `https://livepeercdn.studio/hls/${playbackId}/index.m3u8`;
+                        log(`HLS URL: ${hlsUrl}`, 'info');
+                        connectHLS(hlsUrl);
+                    }, 3000);
                 }
             } else {
                 updateMetric('aiLive', '❌');
@@ -421,13 +424,25 @@ function connectHLS(url) {
         });
         
         hls.on(Hls.Events.ERROR, (event, data) => {
-            if (data.details === 'manifestLoadError') {
-                log(`HLS manifest not ready (retrying): ${data.response?.code || 'unknown'}`, 'warn');
+            if (data.details === 'manifestLoadError' || data.details === 'manifestParsingError') {
+                log(`HLS manifest not ready yet, retrying in 3s...`, 'warn');
                 updateMetric('hlsState', 'WAITING');
+                // Retry after delay
+                setTimeout(() => {
+                    if (hls) {
+                        log('Retrying HLS connection...', 'info');
+                        hls.loadSource(url);
+                    }
+                }, 3000);
             } else if (data.fatal) {
                 log(`HLS fatal error: ${data.type} - ${data.details}`, 'error');
                 updateMetric('hlsState', 'ERROR');
                 setStage(5, 'error');
+                // Try to recover
+                if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                    log('Attempting HLS recovery...', 'info');
+                    hls.startLoad();
+                }
             } else {
                 log(`HLS error: ${data.details}`, 'warn');
             }
