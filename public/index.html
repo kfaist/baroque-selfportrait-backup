@@ -111,7 +111,8 @@
 <script>
 const API_KEY = 'sk_wdNUnsKxxwH6v64BHMwHaWT39Mhwk5ZrqZzXDRmAXxxAqCgVGusff2Y8jxiBofuP';
 const API_BASE = 'https://api.daydream.live/v1';
-const PIPELINE_ID = 'pip_qpUgXycjWF6YMeSL';
+// SDXL-turbo has capacity - SD-turbo is overloaded (confirmed by Daydream staff 1/28/2026)
+const PIPELINE_ID = 'pip_SDXL-turbo';
 
 let localStream, inputPC, streamId, playbackId, hls;
 let pollTimer, statsTimer, elapsedTimer;
@@ -316,7 +317,8 @@ async function setParams() {
             model_id: "stabilityai/sdxl-turbo",
             prompt: "baroque oil painting, dramatic chiaroscuro, Rembrandt style, golden light, rich textures",
             negative_prompt: "blurry, low quality, modern, digital",
-            num_inference_steps: 25,
+            num_inference_steps: 4,
+            guidance_scale: 0,
             seed: 42
         }
     };
