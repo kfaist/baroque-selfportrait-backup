@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Baroque Mirror: Self-Portrait - CMA Wonderball 2026</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
@@ -80,7 +81,7 @@
         .output-area { position: relative; }
         .video-container { position: relative; border: 2px solid rgba(212,175,55,0.6); border-radius: 12px; overflow: hidden; box-shadow: 0 0 60px rgba(212,175,55,0.2), inset 0 0 100px rgba(0,0,0,0.8); background: #000; }
         .video-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; }
-        .output-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .output-video { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
         .video-animation-overlay { position: absolute; top: -20px; left: -20px; right: -20px; bottom: -20px; pointer-events: none; z-index: 2; opacity: 0.4; mix-blend-mode: overlay; }
         .fullscreen-btn { position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; border: 1px solid rgba(212,175,55,0.6); background: rgba(10,6,8,0.8); color: #d4af37; cursor: pointer; border-radius: 6px; font-size: 1.1rem; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; z-index: 20; backdrop-filter: blur(5px); }
         .fullscreen-btn:hover { background: rgba(212,175,55,0.3); border-color: #d4af37; box-shadow: 0 0 20px rgba(212,175,55,0.4); transform: scale(1.1); }
@@ -164,30 +165,32 @@
         }
         
         @media (max-width: 768px) {
+            body { font-size: 1.4rem; font-weight: 600; }
             .header { padding: 10px; }
-            .header-top { display: none; }
-            .header h1 { font-size: 1.4rem; letter-spacing: 2px; }
-            .header-sub, .header-credit { font-size: 0.9rem; }
+            .header-top { font-size: 0.9rem; }
+            .header h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; }
+            .header-sub, .header-credit { font-size: 1.1rem; font-weight: 500; }
             .controls { padding: 16px; }
             .section { margin-bottom: 16px; padding-bottom: 16px; }
-            .section h3 { font-size: 1.2rem; margin-bottom: 14px; }
-            .session-btn { padding: 24px 28px; font-size: 1.4rem; letter-spacing: 3px; min-height: 70px; }
+            .section h3 { font-size: 2rem; font-weight: 700; margin-bottom: 16px; }
+            .session-btn { padding: 28px 32px; font-size: 1.8rem; font-weight: 700; letter-spacing: 3px; min-height: 70px; }
             .style-btn { padding: 20px 14px !important; font-size: 1rem !important; min-height: 65px; }
             .slider-row { margin-bottom: 20px; }
-            .slider-row label { font-size: 1rem; margin-bottom: 12px; }
+            .slider-row label { font-size: 1.6rem; font-weight: 700; margin-bottom: 14px; }
             input[type="range"] { height: 12px; }
             input[type="range"]::-webkit-slider-thumb { width: 32px; height: 32px; }
             .shimmer-block { padding: 24px 20px; }
         }
         
         @media (max-width: 480px) {
+            body { font-size: 1.3rem !important; font-weight: 600 !important; }
             .header h1 { font-size: 1.2rem; }
             .header-sub, .header-credit { font-size: 0.8rem; }
             .controls { margin: 8px; padding: 14px; }
-            .section h3 { font-size: 1.1rem; }
-            .session-btn { padding: 20px 24px; font-size: 1.2rem; min-height: 60px; }
-            .style-btn { padding: 16px 10px !important; font-size: 0.9rem !important; min-height: 55px; }
-            .slider-row label { font-size: 0.9rem; }
+            .section h3 { font-size: 1.5rem !important; font-weight: 700 !important; }
+            .session-btn { padding: 22px 26px; font-size: 1.4rem !important; font-weight: 700 !important; min-height: 65px; }
+            .style-btn { padding: 18px 12px !important; font-size: 1.1rem !important; font-weight: 600 !important; min-height: 60px; }
+            .slider-row label { font-size: 1.2rem !important; font-weight: 600 !important; }
         }
         
         @media (max-height: 500px) and (orientation: landscape) {
@@ -204,7 +207,7 @@
             .session-section { order: 1; background: rgba(15,10,12,0.95); padding: 15px; margin: 10px; border-radius: 12px; border: 1px solid rgba(212,175,55,0.4); }
             .output-area { display: contents; }
             .mobile-action-bar { display: flex !important; order: 3; justify-content: space-between; align-items: stretch; gap: 10px; padding: 12px 10px; background: rgba(10,6,8,0.95); border-bottom: 2px solid rgba(212,175,55,0.4); width: 100%; }
-            .mobile-action-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 8px; border: 1px solid rgba(212,175,55,0.5); border-radius: 8px; font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.3s ease; min-height: 65px; }
+            .mobile-action-btn { flex: 1; display: flex; font-size: 1.1rem; font-weight: 700; flex-direction: column; align-items: center; justify-content: center; padding: 12px 8px; border: 1px solid rgba(212,175,55,0.5); border-radius: 8px; font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.3s ease; min-height: 65px; }
             .mobile-action-btn.capture { background: linear-gradient(180deg, #d4af37, #8b6914); color: #0a0608; font-weight: 700; }
             .mobile-action-btn.capture:active { transform: scale(0.95); }
             .mobile-recent-still { flex: 1.2; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; position: relative; min-height: 65px; overflow: hidden; }
@@ -370,14 +373,27 @@
 // ============================================
 // CONFIGURATION
 // ============================================
-const API_KEY = 'sk_9bFt6nHdK1T6AXG6knDS3K57u1BTS6xe9FiwqwQW52KoK7UpqBBEYnmPGxFvLJmS';
+const API_KEY = 'sk_wdNUnsKxxwH6v64BHMwHaWT39Mhwk5ZrqZzXDRmAXxxAqCgVGusff2Y8jxiBofuP';
 const API_BASE = 'https://api.daydream.live/v1';
 const PIPELINE_ID = 'pip_qpUgXycjWF6YMeSL';
 
 // ============================================
+// CONNECTION TIMING - INCREASED TOLERANCE
+// ============================================
+const ICE_DISCONNECT_WAIT = 30000;  // Wait 30 seconds before considering disconnected
+const AI_WARMUP_TIME = 45000;       // AI takes up to 45 seconds to warm up
+const STATUS_CHECK_INTERVAL = 3000; // Check stream status every 3 seconds
+const MAX_RECONNECT_ATTEMPTS = 3;
+
+// ============================================
 // STATE
 // ============================================
-let localStream, inputPC, streamId, playbackId, hls, pollTimer;
+let localStream, inputPC, outputPC, streamId, playbackId, hls, pollTimer, statusTimer;
+let iceDisconnectTimer = null;
+let reconnectAttempts = 0;
+let whepUrl = null;
+let outputConnected = false;
+let aiProcessing = false;
 let countdownTimer = null;
 let countdownValue = 45;
 let statusDebugLines = [];
@@ -702,7 +718,7 @@ function initAudio(stream) {
         micSource = audioContext.createMediaStreamSource(stream);
         micSource.connect(analyser);
         audioDataArray = new Uint8Array(analyser.frequencyBinCount);
-        const meter = document.getElementById('audioMeter');
+        const meter = document.getElementById('audioMeter'); if (!meter) return;
         meter.innerHTML = '';
         for (let i = 0; i < 32; i++) { const bar = document.createElement('div'); bar.className = 'audio-bar'; bar.style.height = '4px'; meter.appendChild(bar); }
         log('Audio analysis initialized', 'success');
@@ -1085,15 +1101,9 @@ async function start() {
     showStatusOverlay();
     try {
         log('Getting camera...', 'info');
-        localStream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } }, audio: true });
-        document.getElementById('local').srcObject = localStream;
+        const isMobile = window.innerWidth <= 768; localStream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: isMobile ? 640 : 1280 }, height: { ideal: isMobile ? 480 : 720 }, frameRate: { ideal: isMobile ? 24 : 30 } }, audio: true });
+        const localVideo = document.getElementById('local'); localVideo.srcObject = localStream; localVideo.play().catch(e => log('Local video play error: ' + e.message, 'error')); log(`Tracks: ${localStream.getTracks().map(t => t.kind + ':' + t.readyState).join(', ')}`, 'info');
         log('Camera ready', 'success');
-        initAudio(localStream);
-        initMotionDetection();
-        drawBackground = initBackground();
-        drawParticles = initParticles();
-        drawVideoOverlay = initVideoOverlay();
-        if (!animationId) animate();
         log('Creating Daydream stream...', 'info');
         const createRes = await fetch(`${API_BASE}/streams`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` }, body: JSON.stringify({ pipeline_id: PIPELINE_ID }) });
         if (!createRes.ok) throw new Error(`Create failed: ${createRes.status}`);
@@ -1103,7 +1113,7 @@ async function start() {
         log(`Stream created: ${streamId.slice(-8)}`, 'success');
         log('Connecting WebRTC...', 'info');
         await connectWHIP(data.whip_url);
-        log('Video streaming to AI', 'success');
+        log('Video streaming to AI', 'success'); initAudio(localStream); initMotionDetection(); drawBackground = initBackground(); if (window.innerWidth > 768) { drawParticles = initParticles(); } else { drawParticles = () => {}; } drawVideoOverlay = initVideoOverlay(); if (!animationId) animate();
         log('AI initializing...', 'info');
         await new Promise(r => setTimeout(r, 3000));
         await setParams();
@@ -1121,12 +1131,28 @@ async function start() {
 }
 
 async function connectWHIP(whipUrl) {
-    inputPC = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] });
-    inputPC.oniceconnectionstatechange = () => { log(`ICE: ${inputPC.iceConnectionState}`, inputPC.iceConnectionState === 'connected' ? 'success' : 'info'); };
+    inputPC = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }, { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' }, { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' }, { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }], iceCandidatePoolSize: 10 });
+    inputPC.oniceconnectionstatechange = () => {
+        const state = inputPC.iceConnectionState;
+        log(`ICE: ${state}`, state === 'connected' ? 'success' : 'info');
+        if (iceDisconnectTimer) { clearTimeout(iceDisconnectTimer); iceDisconnectTimer = null; }
+        if (state === 'connected') {
+            reconnectAttempts = 0;
+            setTimeout(async () => { if (!inputPC) return; try { const stats = await inputPC.getStats(); stats.forEach(s => { if (s.type === 'outbound-rtp' && s.kind === 'video') { log(`Video: ${s.bytesSent} bytes, ${s.framesSent} frames`, 'info'); } }); } catch(e) {} }, 3000);
+        }
+        else if (state === 'disconnected') {
+            log(`Connection paused - waiting ${ICE_DISCONNECT_WAIT/1000}s before reconnect...`, 'info');
+            iceDisconnectTimer = setTimeout(() => { if (inputPC && inputPC.iceConnectionState === 'disconnected') { log('Connection timeout - recovering', 'error'); if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) { reconnectAttempts++; log(`Reconnect ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}...`, 'info'); stop(); setTimeout(() => { document.getElementById('startBtn').click(); }, 1000); } } }, ICE_DISCONNECT_WAIT);
+        }
+        else if (state === 'failed') {
+            log('Connection failed - recovering...', 'error');
+            if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) { reconnectAttempts++; setTimeout(() => { stop(); setTimeout(() => { document.getElementById('startBtn').click(); }, 1000); }, 2000); }
+        }
+    };
     localStream.getTracks().forEach(track => { inputPC.addTrack(track, localStream); });
     const offer = await inputPC.createOffer();
     await inputPC.setLocalDescription(offer);
-    await new Promise(resolve => { if (inputPC.iceGatheringState === 'complete') resolve(); else { inputPC.onicegatheringstatechange = () => { if (inputPC.iceGatheringState === 'complete') resolve(); }; setTimeout(resolve, 3000); } });
+    await new Promise(resolve => { if (inputPC.iceGatheringState === 'complete') resolve(); else { inputPC.onicegatheringstatechange = () => { if (inputPC.iceGatheringState === 'complete') resolve(); }; setTimeout(resolve, 20000); } });
     const res = await fetch(whipUrl, { method: 'POST', headers: { 'Content-Type': 'application/sdp' }, body: inputPC.localDescription.sdp });
     if (!res.ok) throw new Error(`WHIP failed: ${res.status}`);
     const answer = await res.text();
@@ -1177,6 +1203,7 @@ function connectHLS(url) {
 
 function stop() {
     if (pollTimer) clearTimeout(pollTimer);
+    if (iceDisconnectTimer) clearTimeout(iceDisconnectTimer);
     hideStatusOverlay();
     if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
     if (inputPC) { inputPC.close(); inputPC = null; }
@@ -1202,7 +1229,7 @@ function stop() {
 window.addEventListener('load', () => {
     loadCapturedStills();
     drawBackground = initBackground();
-    drawParticles = initParticles();
+    if (window.innerWidth > 768) { drawParticles = initParticles(); } else { drawParticles = () => {}; }
     drawVideoOverlay = initVideoOverlay();
     function demoAnimate() {
         time++;
