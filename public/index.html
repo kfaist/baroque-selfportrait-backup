@@ -1322,6 +1322,13 @@ function toggleFullscreen() {
 document.addEventListener('fullscreenchange', () => { document.getElementById('fullscreenBtn').textContent = document.fullscreenElement ? '✕' : '⛶'; });
 
 function buildPrompt() {
+    // 3D mode uses candy prompts (flowers/rainbow)
+    if (currentMode === '3d') {
+        const randomCandy = candyPrompts[Math.floor(Math.random() * candyPrompts.length)];
+        return randomCandy;
+    }
+    
+    // 2D mode uses baroque style prompts
     if (customPrompt) {
         let prompt = customPrompt;
         if (params.bgTrans > 50) prompt += ", transparent background, isolated subject, no background, subject only";
@@ -1464,9 +1471,8 @@ async function start() {
         drawVideoOverlay = initVideoOverlay();
         if (!animationId) animate();
         log('Creating Daydream stream...', 'info');
-        const pipelineId = currentMode === '2d' ? PIPELINE_2D : PIPELINE_3D;
         const createRes = await fetch(`${API_BASE}/streams`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` }, body: JSON.stringify({ 
-            pipeline_id: pipelineId
+            pipeline_id: PIPELINE_2D
         }) });
         if (!createRes.ok) throw new Error(`Create failed: ${createRes.status}`);
         const data = await createRes.json();
@@ -1521,7 +1527,7 @@ async function setParams() {
                 width: 1024,
                 height: 1024,
                 negative_prompt: 'cgi, 3d render, digital art, video game, plastic, blurry',
-                ip_adapter: { type: 'regular', scale: 0.5, enabled: true },
+                ip_adapter: { type: 'faceid', scale: ipScale, enabled: true },
                 ip_adapter_style_image_url: styles[currentStyle].styleImage,
                 controlnets: [
                     { enabled: true, model_id: 'xinsir/controlnet-depth-sdxl-1.0', preprocessor: 'depth_tensorrt', conditioning_scale: params.depth, control_guidance_start: 0, control_guidance_end: 1 },
@@ -1530,18 +1536,19 @@ async function setParams() {
             } 
         };
     } else {
-        // 3D DANCE MODE - Pose-based without face preservation
+        // 3D CANDY MODE - Rainbow/flower prompts, less face preservation
         body = {
             params: {
-                model_id: 'stabilityai/sd-turbo',
+                model_id: 'stabilityai/sdxl-turbo',
                 prompt: prompt,
-                negative_prompt: 'background, scenery, environment, room, wall, floor, sky, landscape, nature, furniture, objects, colors, blue, green, red, purple, white background, grey background, gradient, texture behind subject',
-                num_inference_steps: params.strength,
-                seed: 42,
+                delta: 0.7,
+                width: 1024,
+                height: 1024,
+                negative_prompt: 'ugly, blurry, low quality',
+                ip_adapter: { type: 'regular', scale: 0.3, enabled: true },
                 controlnets: [
-                    { conditioning_scale: params.pose, enabled: true, model_id: 'thibaud/controlnet-sd21-openpose-diffusers', preprocessor: 'pose_tensorrt' },
-                    { conditioning_scale: params.edge, enabled: true, model_id: 'thibaud/controlnet-sd21-hed-diffusers', preprocessor: 'soft_edge' },
-                    { conditioning_scale: params.depth, enabled: true, model_id: 'thibaud/controlnet-sd21-depth-diffusers', preprocessor: 'depth_tensorrt' }
+                    { enabled: true, model_id: 'xinsir/controlnet-depth-sdxl-1.0', preprocessor: 'depth_tensorrt', conditioning_scale: 0.4, control_guidance_start: 0, control_guidance_end: 1 },
+                    { enabled: true, model_id: 'xinsir/controlnet-tile-sdxl-1.0', preprocessor: 'feedback', conditioning_scale: 0.1, control_guidance_start: 0, control_guidance_end: 1 }
                 ]
             }
         };
