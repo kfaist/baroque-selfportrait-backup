@@ -524,8 +524,9 @@
 // ============================================
 const API_KEY = 'sk_9bFt6nHdK1T6AXG6knDS3K57u1BTS6xe9FiwqwQW52KoK7UpqBBEYnmPGxFvLJmS';
 const API_BASE = 'https://api.daydream.live/v1';
-const PIPELINE_ID = 'pip_SD-turbo';
-const MODEL_ID = 'stabilityai/sdxl-turbo';
+// Pipeline IDs for different modes
+const PIPELINE_2D = 'pip_SDXL-turbo';  // For 2D portrait mode (SDXL with ip_adapter)
+const PIPELINE_3D = 'pip_SD-turbo';     // For 3D dance mode (SD2.1 with pose controlnets)
 
 // ============================================
 // STATE
@@ -1463,8 +1464,9 @@ async function start() {
         drawVideoOverlay = initVideoOverlay();
         if (!animationId) animate();
         log('Creating Daydream stream...', 'info');
+        const pipelineId = currentMode === '2d' ? PIPELINE_2D : PIPELINE_3D;
         const createRes = await fetch(`${API_BASE}/streams`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` }, body: JSON.stringify({ 
-            pipeline_id: PIPELINE_ID
+            pipeline_id: pipelineId
         }) });
         if (!createRes.ok) throw new Error(`Create failed: ${createRes.status}`);
         const data = await createRes.json();
@@ -1510,16 +1512,16 @@ async function setParams() {
     let body;
     
     if (currentMode === '2d') {
-        // 2D PORTRAIT MODE - Face-preserving with ip_adapter
+        // 2D PORTRAIT MODE - Face-preserving with ip_adapter (SDXL pipeline)
         body = { 
             params: { 
-                model_id: MODEL_ID, 
+                model_id: 'stabilityai/sdxl-turbo', 
                 prompt: prompt,
                 delta: 0.7,
                 width: 1024,
                 height: 1024,
                 negative_prompt: 'cgi, 3d render, digital art, video game, plastic, blurry',
-                ip_adapter: { type: 'faceid', scale: 0.5, enabled: true },
+                ip_adapter: { type: 'regular', scale: 0.5, enabled: true },
                 ip_adapter_style_image_url: styles[currentStyle].styleImage,
                 controlnets: [
                     { enabled: true, model_id: 'xinsir/controlnet-depth-sdxl-1.0', preprocessor: 'depth_tensorrt', conditioning_scale: params.depth, control_guidance_start: 0, control_guidance_end: 1 },
