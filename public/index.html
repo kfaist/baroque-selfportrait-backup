@@ -1,12 +1,16 @@
+<!-- deploy-1769081642 -->
+<!-- v1769081282 -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Baroque Mirror: Dance & Enrobe - CMA Wonderball 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Baroque Mirror: Self-Portrait - CMA Wonderball 2026</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
+        html, body { height: 100%; }
         body { 
             background: #0a0608; 
             color: #fff; 
@@ -15,58 +19,74 @@
             overflow-x: hidden;
         }
         
-        /* Interactive background video */
-        #interactiveBg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.6; }
-        .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 6, 8, 0.3); z-index: 1; pointer-events: none; }
-        #pulseOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; opacity: 0; background: radial-gradient(circle at center, rgba(212,175,55,0.4) 0%, transparent 70%); transition: opacity 0.1s; }
-        #particleCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
-        
+        #bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        #particleCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
         .content { position: relative; z-index: 10; }
         
-        .header { text-align: center; padding: 20px; border-bottom: 1px solid rgba(212,175,55,0.3); background: linear-gradient(180deg, rgba(114,47,55,0.4) 0%, rgba(10,6,8,0.7) 100%); backdrop-filter: blur(10px); }
+        .header { text-align: center; padding: 20px; border-bottom: 1px solid rgba(212,175,55,0.3); background: linear-gradient(180deg, rgba(114,47,55,0.4) 0%, rgba(10,6,8,0.9) 100%); backdrop-filter: blur(10px); }
         .header-top { display: flex; justify-content: center; gap: 40px; margin-bottom: 10px; font-size: 0.8rem; letter-spacing: 4px; color: #f4e4ba; font-family: 'Cinzel', serif; text-transform: uppercase; }
-        .header h1 { color: #d4af37; font-size: 2.5rem; margin: 0; letter-spacing: 6px; font-family: 'Cinzel', serif; text-shadow: 0 0 30px rgba(212,175,55,0.5); }
-        .header h1 .subtitle { display: block; font-size: 1.2rem; color: #f4e4ba; letter-spacing: 8px; margin-top: 5px; font-weight: 400; font-style: italic; }
+        .header h1 { color: #d4af37; font-size: 2.5rem; margin: 0; letter-spacing: 6px; font-family: 'Cinzel', serif; text-shadow: 0 0 10px rgba(212,175,55,0.8), 0 0 20px rgba(212,175,55,0.6), 0 0 40px rgba(212,175,55,0.4), 0 0 80px rgba(212,175,55,0.3); }
         .header-sub { font-size: 1rem; color: rgba(244,228,186,0.8); margin-top: 8px; font-style: italic; }
         .header-credit { font-size: 0.9rem; color: #d4af37; margin-top: 5px; font-weight: 600; }
         
+        /* FLAT 3-COLUMN GRID - EXACTLY LIKE DANCE */
         .main { display: grid; grid-template-columns: 400px 1fr 200px; gap: 25px; padding: 25px; max-width: 1900px; margin: 0 auto; }
         
-        .controls, .capture-panel { background: rgba(15,10,12,0.85); border: 1px solid rgba(212,175,55,0.4); border-radius: 12px; padding: 20px; backdrop-filter: blur(15px); box-shadow: 0 0 40px rgba(212,175,55,0.1), inset 0 0 60px rgba(0,0,0,0.5); }
+        .controls, .capture-panel { background: linear-gradient(180deg, rgba(114,47,55,0.2) 0%, rgba(10,6,8,0.4) 100%); border: 3px solid rgba(212,175,55,0.5); border-radius: 12px; padding: 20px; backdrop-filter: blur(8px); box-shadow: 0 0 40px rgba(212,175,55,0.1), inset 0 0 60px rgba(0,0,0,0.3); height: fit-content; align-self: start; }
+        .controls { grid-column: 1; }
+        .output-area { grid-column: 2; }
+        .capture-panel { grid-column: 3; }
         .capture-panel { padding: 15px; }
         
-        .section { margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid rgba(212,175,55,0.2); }
+        .section { margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid rgba(212,175,55,0.2); }
         .section:last-child { border-bottom: none; margin-bottom: 0; }
-        .section h3 { color: #d4af37; font-size: 0.95rem; margin: 0 0 14px 0; font-family: 'Cinzel', serif; letter-spacing: 2px; }
+        .section h3 { color: #fbbf24; font-size: 1.05rem; margin: 0 0 14px 0; font-family: 'Cinzel', serif; letter-spacing: 3px; font-weight: 900; text-shadow: 0 0 15px rgba(251,191,36,1), 0 0 30px rgba(251,191,36,0.7), 0 2px 4px rgba(0,0,0,0.9); }
         
         .session-section { margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid rgba(212,175,55,0.2); }
-        .session-btn { width: 100%; padding: 16px 20px; border: 2px solid #d4af37; background: linear-gradient(180deg, rgba(114,47,55,0.85), rgba(74,31,36,0.95)); color: #d4af37; font-size: 1rem; cursor: pointer; border-radius: 8px; font-family: 'Cinzel', serif; letter-spacing: 3px; transition: all 0.3s ease; text-transform: uppercase; box-shadow: 0 0 20px rgba(212,175,55,0.15); }
-        .session-btn:hover { background: linear-gradient(180deg, #d4af37, #8b6914); color: #0a0608; box-shadow: 0 0 35px rgba(212,175,55,0.5); transform: translateY(-2px); }
+        .session-btn { width: 100%; padding: 16px 20px; border: 3px solid #d946ef; background: linear-gradient(180deg, rgba(217,70,239,0.35), rgba(162,28,175,0.45)); color: #f0abfc; font-size: 1rem; cursor: pointer; border-radius: 8px; font-family: 'Cinzel', serif; letter-spacing: 3px; transition: all 0.3s ease; text-transform: uppercase; box-shadow: 0 0 20px rgba(217,70,239,0.2); }
+        .session-btn:hover { background: linear-gradient(180deg, #d946ef, #a21caf); color: #0a0608; box-shadow: 0 0 35px rgba(217,70,239,0.5); transform: translateY(-2px); }
         .session-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-        .session-btn.stop { background: linear-gradient(180deg, rgba(139,0,0,0.85), rgba(74,0,0,0.95)); border-color: #8b0000; color: #ff6b6b; }
+        .session-btn.stop { background: linear-gradient(180deg, rgba(139,0,0,0.92), rgba(74,0,0,0.98)); border-color: #8b0000; color: #ff6b6b; border: 2px solid rgba(212,175,55,0.4); }
         .session-btn.stop:hover { background: linear-gradient(180deg, #8b0000, #4a0000); color: #fff; box-shadow: 0 0 35px rgba(139,0,0,0.5); }
         
-        .gold-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .gold-btn { padding: 10px 12px; border: 1px solid rgba(212,175,55,0.5); background: rgba(20,15,18,0.8); color: #f4e4ba; cursor: pointer; border-radius: 6px; font-family: 'Cormorant Garamond', serif; font-size: 0.9rem; transition: all 0.3s ease; }
-        .gold-btn:hover { background: rgba(212,175,55,0.15); border-color: #d4af37; box-shadow: 0 0 15px rgba(212,175,55,0.2); }
-        .gold-btn.active { background: linear-gradient(135deg, #d4af37, #8b6914); color: #0a0608; font-weight: 700; border-color: #d4af37; box-shadow: 0 0 20px rgba(212,175,55,0.4); }
-        .gold-btn .icon { display: block; font-size: 1.2rem; margin-bottom: 2px; }
+        /* 2D/3D Mode Toggle */
+        .mode-toggle-section { margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid rgba(212,175,55,0.2); }
+        .mode-toggle-container { display: flex; align-items: center; justify-content: center; gap: 20px; padding: 15px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 2px solid rgba(212,175,55,0.3); }
+        .mode-label { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 2px; transition: all 0.3s ease; cursor: pointer; }
+        .mode-label.active { color: #d4af37; text-shadow: 0 0 15px rgba(212,175,55,0.8), 0 0 30px rgba(212,175,55,0.5); }
+        .mode-label.inactive { color: rgba(244,228,186,0.4); }
+        .mode-switch { position: relative; width: 80px; height: 40px; background: linear-gradient(180deg, rgba(114,47,55,0.6), rgba(74,31,36,0.8)); border: 2px solid rgba(212,175,55,0.5); border-radius: 20px; cursor: pointer; transition: all 0.3s ease; }
+        .mode-switch:hover { border-color: #d4af37; box-shadow: 0 0 20px rgba(212,175,55,0.3); }
+        .mode-switch-knob { position: absolute; top: 3px; left: 3px; width: 30px; height: 30px; background: radial-gradient(circle at 30% 30%, #f4e4ba, #d4af37); border-radius: 50%; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(212,175,55,0.6); }
+        .mode-switch.mode-3d .mode-switch-knob { left: 43px; }
+        .mode-indicator { text-align: center; margin-top: 10px; font-size: 0.85rem; color: rgba(244,228,186,0.7); font-style: italic; }
+        .mode-indicator strong { color: #d4af37; }
         
-        .bg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .bg-thumb { position: relative; border: 2px solid rgba(212,175,55,0.3); border-radius: 6px; overflow: hidden; cursor: pointer; aspect-ratio: 16/10; background: #000; transition: all 0.3s ease; }
-        .bg-thumb:hover { border-color: #d4af37; box-shadow: 0 0 15px rgba(212,175,55,0.2); }
-        .bg-thumb.active { border-color: #f4e4ba; box-shadow: 0 0 20px rgba(212,175,55,0.4); }
-        .bg-thumb video { width: 100%; height: 100%; object-fit: cover; }
-        .bg-thumb .label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: #f4e4ba; font-size: 0.65rem; padding: 4px; text-align: center; font-family: 'Cinzel', serif; }
+        .prompt-section { margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid rgba(212,175,55,0.2); }
+        .prompt-section h3 { margin-bottom: 12px; color: #d4af37; font-size: 0.95rem; font-family: 'Cinzel', serif; letter-spacing: 2px; text-shadow: 0 0 10px rgba(212,175,55,0.8), 0 0 20px rgba(212,175,55,0.5), 0 2px 4px rgba(0,0,0,0.8); }
+        .prompt-container { display: flex; gap: 8px; align-items: stretch; }
+        .prompt-btn { width: 44px; height: 44px; border: 2px solid rgba(255,140,50,0.7); background: linear-gradient(180deg, rgba(140,60,20,0.5) 0%, rgba(80,40,15,0.6) 100%); color: #ff8c32; cursor: pointer; border-radius: 6px; font-size: 1.2rem; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .prompt-btn:hover { background: rgba(255,140,50,0.2); border-color: #ff8c32; box-shadow: 0 0 15px rgba(255,140,50,0.4); transform: scale(1.05); }
+        .prompt-btn.apply { background: linear-gradient(135deg, rgba(255,140,50,0.4), rgba(180,80,20,0.5)); border-color: #ff8c32; font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 1px; color: #ffb070; text-shadow: 0 0 8px rgba(255,140,50,0.6), 0 2px 3px rgba(0,0,0,0.8); }
+        .prompt-btn.apply:hover { background: linear-gradient(135deg, #ff8c32, #cc6020); color: #0a0608; box-shadow: 0 0 20px rgba(255,140,50,0.5); }
+        .prompt-input { flex: 1; padding: 12px 14px; border: 2px solid rgba(255,140,50,0.7); background: rgba(30,20,25,0.6); color: #f4e4ba; border-radius: 6px; font-family: 'Cormorant Garamond', serif; font-size: 1rem; resize: none; min-height: 44px; transition: all 0.3s ease; }
+        .prompt-input:focus { outline: none; border-color: #ff8c32; box-shadow: 0 0 20px rgba(255,140,50,0.3); }
+        .prompt-input::placeholder { color: rgba(244,228,186,0.85); font-style: italic; font-size: 1rem; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
         
-        .blend-select { width: 100%; padding: 8px 10px; background: rgba(20,15,18,0.9); color: #f4e4ba; border: 1px solid rgba(212,175,55,0.5); border-radius: 6px; font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; cursor: pointer; }
-        .blend-select:focus { outline: none; border-color: #d4af37; }
+        .style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .style-btn { padding: 10px 12px; border: 2px solid rgba(76,187,23,0.6); background: linear-gradient(180deg, rgba(30,80,20,0.4) 0%, rgba(20,50,15,0.5) 100%); color: #7ddf64; cursor: pointer; border-radius: 6px; font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; font-weight: 700; transition: all 0.3s ease; text-shadow: 0 0 8px rgba(125,223,100,0.3), 0 2px 4px rgba(0,0,0,0.8); }
+        .style-btn:hover { background: linear-gradient(180deg, rgba(76,187,23,0.3) 0%, rgba(50,140,15,0.4) 100%); border-color: #4CBB17; box-shadow: 0 0 20px rgba(76,187,23,0.4); text-shadow: 0 0 10px rgba(76,187,23,0.5); }
+        .style-btn.active { background: linear-gradient(135deg, rgba(16,185,129,0.4), rgba(4,120,87,0.5)); color: #34d399; font-weight: 700; border-color: #10b981; box-shadow: 0 0 20px rgba(16,185,129,0.4); }
         
-        .slider-row { margin-bottom: 14px; }
-        .slider-row label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px; color: rgba(244,228,186,0.9); }
-        .slider-row .val { color: #d4af37; font-weight: 700; min-width: 40px; text-align: right; }
-        input[type="range"] { width: 100%; height: 6px; border-radius: 3px; background: linear-gradient(90deg, #722f37, #d4af37); -webkit-appearance: none; cursor: pointer; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #f4e4ba, #d4af37); cursor: pointer; box-shadow: 0 0 10px rgba(212,175,55,0.6); transition: transform 0.2s; }
+        .mode-box { margin-top: 14px; padding: 12px; background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid rgba(212,175,55,0.15); }
+        .mode-labels { display: flex; justify-content: space-between; font-size: 0.85rem; color: #c4b5fd; margin-bottom: 10px; font-weight: 800; text-shadow: 0 0 10px rgba(196,181,253,0.6), 0 2px 4px rgba(0,0,0,0.8); }
+        .mode-value { text-align: center; color: #a78bfa; font-size: 1rem; margin-top: 8px; font-weight: 800; text-shadow: 0 0 12px rgba(167,139,250,0.8), 0 2px 4px rgba(0,0,0,0.8); }
+        
+        .slider-row { margin-bottom: 12px; }
+        .slider-row label { display: flex; justify-content: space-between; font-size: 0.95rem; margin-bottom: 6px; color: #c4b5fd; font-weight: 700; text-shadow: 0 0 8px rgba(196,181,253,0.5), 0 2px 4px rgba(0,0,0,0.8); }
+        .slider-row .val { color: #ddd6fe; font-weight: 500; min-width: 40px; text-align: right; }
+        input[type="range"] { width: 100%; height: 6px; border-radius: 3px; background: linear-gradient(90deg, #7c3aed, #ec4899, #f97316, #fbbf24); -webkit-appearance: none; cursor: pointer; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fef3c7, #f59e0b); cursor: pointer; box-shadow: 0 0 10px rgba(245,158,11,0.6); transition: transform 0.2s; }
         input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
         
         .audio-section { background: rgba(114,47,55,0.2); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; padding: 12px; margin-top: 12px; }
@@ -75,498 +95,1658 @@
         .audio-bar { flex: 1; background: linear-gradient(180deg, #d4af37, #722f37, #2a1015); border-radius: 2px; transition: height 0.05s ease-out; }
         
         .output-area { position: relative; }
-        .video-container { position: relative; border: 2px solid rgba(212,175,55,0.6); border-radius: 12px; overflow: hidden; box-shadow: 0 0 60px rgba(212,175,55,0.2), inset 0 0 100px rgba(0,0,0,0.8); background: #000; }
-        .video-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; }
-        .container-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
-        .output-video { position: relative; width: 100%; height: 100%; object-fit: cover; display: block; mix-blend-mode: screen; z-index: 1; filter: contrast(2.0) saturate(1.5) brightness(1.2); }
-        .gold-pulse-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 2; opacity: 0; background: radial-gradient(circle at center, rgba(212,175,55,0.3) 0%, transparent 70%); transition: opacity 0.1s; }
-        .black-crush-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 3; background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.3) 100%); mix-blend-mode: multiply; }
+        .video-container { position: relative; border: 2px solid rgba(212,175,55,0.6); border-radius: 12px; overflow: hidden; box-shadow: 0 0 60px rgba(212,175,55,0.2), inset 0 0 100px rgba(0,0,0,0.8); background: transparent; }
+        .video-wrapper { position: relative; width: 100%; aspect-ratio: 4/3; overflow: hidden; background: transparent; background-size: cover; background-position: center; }
+        .output-video { width: 100%; height: 100%; object-fit: cover; object-position: center center; display: block; background: transparent; opacity: 0; transition: opacity 0.5s ease; }
+        .output-video.playing { opacity: 1; }
+        .video-animation-overlay { position: absolute; top: -20px; left: -20px; right: -20px; bottom: -20px; pointer-events: none; z-index: 2; opacity: 0.4; mix-blend-mode: overlay; }
         .fullscreen-btn { position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; border: 1px solid rgba(212,175,55,0.6); background: rgba(10,6,8,0.8); color: #d4af37; cursor: pointer; border-radius: 6px; font-size: 1.1rem; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; z-index: 20; backdrop-filter: blur(5px); }
         .fullscreen-btn:hover { background: rgba(212,175,55,0.3); border-color: #d4af37; box-shadow: 0 0 20px rgba(212,175,55,0.4); transform: scale(1.1); }
         .video-container:fullscreen { border-radius: 0; border: none; }
         .video-container:fullscreen .video-wrapper { aspect-ratio: auto; width: 100vw; height: 100vh; }
-        .video-container:fullscreen .output-video { object-fit: contain; background: #000; }
+        .video-container:fullscreen .output-video { object-fit: contain; background: transparent; }
         .video-container:fullscreen .fullscreen-btn { top: 25px; right: 25px; }
-        .video-container:fullscreen .webcam-pip { width: 320px; bottom: 30px; left: 30px; }
-        .frame-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; border: 8px solid transparent; border-image: linear-gradient(135deg, #d4af37 0%, #8b6914 25%, #d4af37 50%, #8b6914 75%, #d4af37 100%) 1; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); z-index: 5; }
-        .webcam-pip { position: absolute; bottom: 20px; left: 20px; width: 280px; border: 2px solid rgba(212,175,55,0.7); border-radius: 8px; background: #000; overflow: hidden; box-shadow: 0 0 30px rgba(0,0,0,0.8); z-index: 10; }
-        .webcam-pip video { width: 100%; display: block; }
-        .webcam-pip::before { content: 'INPUT'; position: absolute; top: 8px; left: 8px; font-size: 0.65rem; color: #d4af37; background: rgba(0,0,0,0.7); padding: 2px 8px; border-radius: 3px; font-family: 'Cinzel', serif; letter-spacing: 2px; z-index: 5; }
+        .video-container:fullscreen .frame-overlay { display: none; }
+        .video-container:fullscreen .video-animation-overlay { display: none; }
+        .frame-overlay { display: none; }
         
-        #log { background: rgba(0,0,0,0.6); padding: 12px; height: 100px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.7rem; border: 1px solid rgba(212,175,55,0.2); border-radius: 6px; margin-top: 15px; }
+                .status-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 50; display: none; font-family: "Cinzel", serif; font-size: 1.1rem; text-align: center; width: 90%; max-width: 500px; background: rgba(10,6,8,0.6); padding: 30px; border-radius: 12px; border: 1px solid rgba(212,175,55,0.3); }
+        .status-shimmer-bg { position: relative; padding: 14px; background: linear-gradient(135deg, rgba(255,100,150,0.18), rgba(255,200,100,0.14), rgba(100,255,200,0.18), rgba(150,100,255,0.18), rgba(255,100,150,0.14)); background-size: 400% 400%; animation: oilSlick 8s ease infinite; overflow: hidden; border-radius: 16px; }
+        .status-shimmer-bg::before { content: ""; position: absolute; top: 0; left: -150%; width: 200%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,150,200,0.15), rgba(200,255,220,0.12), rgba(180,200,255,0.15), transparent); animation: shimmer 6s infinite; pointer-events: none; }
+        .status-shimmer-block { position: relative; background: transparent; padding: 28px 24px; overflow: hidden; border-radius: 12px; backdrop-filter: blur(8px); }
+        .status-shimmer-block::before { content: ""; position: absolute; top: 0; left: -150%; width: 200%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,180,220,0.1), rgba(180,255,220,0.08), rgba(200,180,255,0.1), transparent); animation: shimmer 5s infinite; pointer-events: none; }
+        .status-overlay.active { display: block; }
+        .status-message { color: #d4af37; animation: goldPulse 2s ease-in-out infinite; margin-bottom: 12px; text-shadow: 0 0 10px rgba(212,175,55,0.8), 0 0 20px rgba(212,175,55,0.6), 0 0 40px rgba(212,175,55,0.4), 0 0 60px rgba(212,175,55,0.3); font-weight: 800; letter-spacing: 2px; }
+        @keyframes goldPulse { 0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(212,175,55,0.8), 0 0 20px rgba(212,175,55,0.6), 0 0 40px rgba(212,175,55,0.4); } 50% { opacity: 0.85; text-shadow: 0 0 20px rgba(212,175,55,1), 0 0 40px rgba(212,175,55,0.8), 0 0 60px rgba(212,175,55,0.5); } }
+        .status-debug { color: #f4e4ba; font-size: 0.8rem; line-height: 1.6; font-family: "Cormorant Garamond", serif; text-shadow: 0 0 8px rgba(244,228,186,0.5); font-weight: 600; }
+        .status-debug-line { margin-bottom: 2px; }
+        .status-debug-line.info { color: #88ccff; }
+        .status-debug-line.success { color: #88ffaa; }
+        .status-debug-line.error { color: #ff6b6b; }
+        
+        .input-preview-section { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(212,175,55,0.3); }
+        .input-preview-section h4 { color: #d4af37; font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 8px; text-align: center; text-transform: uppercase; }
+        .webcam-pip { position: relative; width: 100%; border: 2px solid rgba(212,175,55,0.6); border-radius: 6px; overflow: hidden; background: transparent; box-shadow: 0 0 15px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.3); aspect-ratio: 4/3; }
+        .webcam-pip video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
+        .source-hint { text-align: center; font-size: 0.7rem; color: rgba(212,175,55,0.7); font-family: "Cormorant Garamond", serif; margin-top: 8px; font-style: italic; }
+        .source-toggle { display: flex; gap: 10px; justify-content: center; margin-top: 6px; }
+        .source-btn { padding: 10px 18px; border: 2px solid rgba(212,175,55,0.6); background: rgba(20,15,18,0.5); color: #d4af37; cursor: pointer; border-radius: 8px; font-size: 1rem; font-family: "Cinzel", serif; font-weight: 600; letter-spacing: 1px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .source-btn:hover { background: rgba(212,175,55,0.15); border-color: #d4af37; }
+        .source-btn.active { background: linear-gradient(135deg, rgba(16,185,129,0.5), rgba(4,120,87,0.65)); border-color: #10b981; color: #34d399; }
+        #uploadBtn { border: 2px solid rgba(147,112,219,0.6); background: rgba(75,0,130,0.3); color: #b794f4; }
+        #uploadBtn:hover { background: rgba(147,112,219,0.25); border-color: #9370db; }
+        #uploadBtn.active { background: linear-gradient(135deg, rgba(147,112,219,0.5), rgba(75,0,130,0.65)); border-color: #9370db; color: #d6bcfa; }
+        #log { display: none; background: rgba(0,0,0,0.6); padding: 12px; height: 100px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.7rem; border: 1px solid rgba(212,175,55,0.2); border-radius: 6px; margin-top: 15px; }
         .success { color: #4ade80; }
         .error { color: #f87171; }
         .info { color: #60a5fa; }
         
         .capture-panel-header { display: flex; justify-content: center; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(212,175,55,0.2); }
         .capture-panel-header h3 { color: #d4af37; font-size: 0.8rem; font-family: 'Cinzel', serif; letter-spacing: 2px; margin: 0; }
-        .purchase-btn-large { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 12px 10px; margin-bottom: 15px; border: 2px solid #d4af37; background: linear-gradient(180deg, rgba(212,175,55,0.25), rgba(139,105,20,0.35)); color: #d4af37; cursor: pointer; border-radius: 6px; font-family: 'Cinzel', serif; transition: all 0.3s ease; text-transform: uppercase; text-decoration: none; text-align: center; gap: 2px; }
+        .purchase-btn-large { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 16px 12px; margin-bottom: 15px; border: 2px solid #d4af37; background: linear-gradient(180deg, rgba(212,175,55,0.25), rgba(139,105,20,0.35)); color: #d4af37; cursor: pointer; border-radius: 6px; font-family: 'Cinzel', serif; transition: all 0.3s ease; text-transform: uppercase; text-decoration: none; text-align: center; gap: 2px; }
         .purchase-btn-large:hover { background: linear-gradient(180deg, #d4af37, #8b6914); color: #0a0608; box-shadow: 0 0 25px rgba(212,175,55,0.5); transform: translateY(-2px); }
-        .purchase-btn-large .purchase-line { font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; }
+        .purchase-btn-large .purchase-line { font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; }
         .purchase-btn-large .purchase-divider { font-size: 0.6rem; opacity: 0.7; line-height: 1; }
-        .capture-grid { display: flex; flex-direction: column; gap: 10px; }
-        .capture-slot { aspect-ratio: 16/10; border: 1px solid rgba(212,175,55,0.3); border-radius: 6px; background: rgba(0,0,0,0.5); overflow: hidden; position: relative; transition: all 0.3s ease; }
-        .capture-slot:hover { border-color: #d4af37; box-shadow: 0 0 15px rgba(212,175,55,0.2); }
+        .capture-btn-large { display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px 10px; margin-bottom: 15px; border: 2px solid #06b6d4; background: linear-gradient(180deg, rgba(6,182,212,0.15), rgba(8,145,178,0.25)); color: #22d3ee; cursor: pointer; border-radius: 6px; font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; transition: all 0.3s ease; text-transform: uppercase; }
+        .capture-btn-large:hover { background: linear-gradient(180deg, #06b6d4, #0891b2); color: #0a0608; box-shadow: 0 0 20px rgba(6,182,212,0.5); transform: translateY(-1px); }
+        .capture-grid { display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 3; overflow: hidden; }
+        .capture-slot { aspect-ratio: 16/10; border-radius: 8px; background: rgba(15,10,12,0.4); overflow: hidden; position: relative; transition: all 0.3s ease; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); }
+        .capture-slot { border: 2px solid rgba(212,175,55,0.4); }
+        .capture-slot[data-slot="1"] { border: 2px solid rgba(255,100,150,0.6); }
+        .capture-slot[data-slot="2"] { border: 2px solid rgba(100,200,255,0.6); }
+        .capture-slot[data-slot="3"] { border: 2px solid rgba(150,255,150,0.6); }
+        .capture-slot[data-slot="4"] { border: 2px solid rgba(255,200,100,0.6); }
+        .capture-slot[data-slot="5"] { border: 2px solid rgba(200,150,255,0.6); }
+        .capture-slot.placeholder { background: transparent; box-shadow: none; min-height: 60px; }
+        .capture-slot.placeholder[data-slot="6"] { border: 2px solid rgba(255,150,100,0.5); }
+        .capture-slot.placeholder[data-slot="7"] { border: 2px solid rgba(255,180,120,0.5); }
+        .capture-slot.placeholder[data-slot="8"] { border: 2px solid rgba(255,210,150,0.5); }
+        .capture-slot.placeholder[data-slot="9"] { border: 2px solid rgba(255,240,180,0.5); }
+        .capture-slot.placeholder::after { display: none; }
+        .capture-slot:hover { border-color: #d4af37; box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 0 10px rgba(212,175,55,0.3); }
+        .capture-slot-number { position: absolute; top: 4px; left: 4px; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 0.55rem; color: rgba(212,175,55,0.6); letter-spacing: 1px; z-index: 2; }
         .capture-slot img { width: 100%; height: 100%; object-fit: cover; display: none; }
         .capture-slot.has-image img { display: block; }
+        .capture-slot.has-image::after { content: '⚜'; position: absolute; bottom: 6px; right: 6px; font-size: 1rem; color: rgba(212,175,55,0.25); z-index: 1; }
         .capture-slot.has-image .capture-btn { opacity: 0; }
         .capture-slot.has-image:hover .capture-btn { opacity: 1; }
         .capture-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 8px 12px; border: 1px solid rgba(212,175,55,0.6); background: rgba(15,10,12,0.9); color: #d4af37; font-size: 0.6rem; cursor: pointer; border-radius: 4px; font-family: 'Cinzel', serif; letter-spacing: 1px; transition: all 0.3s ease; text-transform: uppercase; white-space: nowrap; }
         .capture-btn:hover { background: linear-gradient(135deg, #d4af37, #8b6914); color: #0a0608; box-shadow: 0 0 15px rgba(212,175,55,0.4); }
-        .capture-slot-number { position: absolute; top: 4px; left: 4px; font-size: 0.55rem; color: rgba(212,175,55,0.6); font-family: 'Cinzel', serif; }
+        
+        .statement-section { margin-top: 12px; position: relative; width: 100%; box-sizing: border-box; background: transparent; padding: 0; border-radius: 16px; border: none; }
+        .statement-content { padding: 36px 44px; }
+        .statement-content h2 { color: #d4af37; font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 4px; margin: 0 0 15px 0; text-transform: uppercase; }
+        .statement-content h2:not(:first-of-type) { margin-top: 25px; }
+        .statement-content p { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; line-height: 1.7; margin-bottom: 12px; color: #f4e4ba; }
+        .statement-content p:last-of-type { margin-bottom: 0; }
+        .statement-content a { color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.4); transition: all 0.3s ease; }
+        .statement-content a:hover { border-bottom-color: #fff; }
+        .statement-content .section-divider { text-align: center; color: #fff; font-size: 1rem; margin: 28px 0; opacity: 0.5; letter-spacing: 0.3em; }
+        .statement-content .contact-info { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(212,175,55,0.3); font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 0.95rem; color: rgba(244,228,186,0.7); }
+        .statement-content .contact-info p { margin-bottom: 6px; font-size: 0.95rem; }
+        .statement-content .contact-info strong { color: rgba(212,175,55,0.8); letter-spacing: 2px; font-weight: normal; }
+        .statement-content .license-note { font-style: italic; opacity: 0.85; }
+
+        .shimmer-bg { position: relative; padding: 6px; background: linear-gradient(135deg, rgba(255,100,150,0.25), rgba(255,200,100,0.20), rgba(100,255,200,0.25), rgba(150,100,255,0.25), rgba(255,100,150,0.20)); background-size: 400% 400%; animation: oilSlick 8s ease infinite; overflow: hidden; border-radius: 16px; border: 2px solid rgba(212,175,55,0.7); }
+        .shimmer-bg::before { content: ""; position: absolute; top: 0; left: -150%; width: 200%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,150,200,0.25), rgba(200,255,220,0.2), rgba(180,200,255,0.25), transparent); animation: shimmer 4s infinite; pointer-events: none; }
+        .shimmer-block { position: relative; background: transparent; padding: 36px 44px; overflow: hidden; border-radius: 12px; }
+        .shimmer-block::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,6,8,0.7); border-radius: 12px; z-index: -1; }
+        @keyframes shimmer { 0% { transform: translateX(0); } 50% { transform: translateX(100%); } 100% { transform: translateX(100%); } }
+        @keyframes oilSlick { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .shimmer-block h2 { position: relative; color: #d4af37; font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 4px; margin: 0 0 15px 0; text-transform: uppercase; }
+        .shimmer-block h2:not(:first-of-type) { margin-top: 25px; }
+        .shimmer-block p { position: relative; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; line-height: 1.7; margin-bottom: 12px; color: #f4e4ba; }
+        .shimmer-block p:last-of-type { margin-bottom: 0; }
+        .shimmer-block a { color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.4); transition: all 0.3s ease; }
+        .shimmer-block a:hover { border-bottom-color: #fff; }
+        .shimmer-block .section-divider { position: relative; text-align: center; color: #fff; font-size: 1rem; margin: 28px 0; opacity: 0.5; letter-spacing: 0.3em; }
+        .shimmer-block .contact-info { position: relative; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(212,175,55,0.3); font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 0.95rem; color: rgba(244,228,186,0.7); }
+        .shimmer-block .contact-info p { margin-bottom: 6px; font-size: 0.95rem; }
+        .shimmer-block .contact-info strong { color: rgba(212,175,55,0.8); letter-spacing: 2px; font-weight: normal; }
+        .shimmer-block .license-note { font-style: italic; opacity: 0.85; }
         
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
         ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.5); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,0.7); }
+        
+        /* RESPONSIVE - EXACTLY LIKE DANCE */
+        
+        @media (max-width: 1200px) {
+            .main { grid-template-columns: 1fr; padding: 0; gap: 0; }
+            .output-area { display: contents; }
+            .video-container { order: -10; width: 100vw; margin-left: calc(-50vw + 50%); border-radius: 0 !important; }
+            .statement-section { order: 101; width: calc(100vw - 20px); margin: 10px auto; }
+            .capture-panel { display: none !important; }
+            .controls { margin: 10px; border-radius: 12px; }
+        }
+        
+        @media (max-width: 768px) {
+            body { font-size: 1.4rem; font-weight: 600; }
+            .header { padding: 8px 10px; }
+            .header-top { display: none; }
+            .header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: 2px; margin: 0; }
+            .header-sub, .header-credit { display: none; }
+            .header-flourish { display: none; }
+            .header-title-row { gap: 6px; }
+            .header-info { gap: 0; }
+            .controls { padding: 16px; }
+            .section { margin-bottom: 16px; padding-bottom: 16px; }
+            .section h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; }
+            .session-btn { padding: 20px 24px; font-size: 1.2rem; font-weight: 800; letter-spacing: 3px; min-height: 60px; }
+            .style-btn { padding: 14px 10px !important; font-size: 0.85rem !important; min-height: 50px; }
+            .slider-row { margin-bottom: 16px; }
+            .slider-row label { font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; }
+            input[type="range"] { height: 10px; }
+            input[type="range"]::-webkit-slider-thumb { width: 28px; height: 28px; }
+            .shimmer-block { padding: 20px 16px; }
+            .shimmer-block h2 { font-size: 0.95rem; letter-spacing: 3px; }
+            .shimmer-block p { font-size: 0.9rem; line-height: 1.6; }
+            .video-wrapper { display: flex; align-items: center; justify-content: center; }
+            .output-video { max-width: 100%; max-height: 100%; width: auto; height: auto; margin: auto; }
+            .source-hint { font-size: 0.65rem; }
+            .source-btn { padding: 8px 14px; font-size: 0.85rem; }
+        }
+        
+        @media (max-width: 480px) {
+            body { font-size: 1rem !important; font-weight: 600 !important; }
+            .header { padding: 6px 8px; }
+            .header-top { display: none; }
+            .header h1 { font-size: 0.95rem; letter-spacing: 1px; margin: 0; }
+            .header-sub, .header-credit { display: none; }
+            .header-flourish { display: none; }
+            .header-title-row { gap: 4px; }
+            .controls { margin: 6px; padding: 12px; }
+            .section h3 { font-size: 0.95rem !important; font-weight: 700 !important; }
+            .session-btn { padding: 18px 20px; font-size: 1.1rem !important; font-weight: 800 !important; min-height: 55px; letter-spacing: 3px; }
+            .style-btn { padding: 12px 8px !important; font-size: 0.8rem !important; font-weight: 600 !important; min-height: 45px; }
+            .slider-row label { font-size: 0.85rem !important; font-weight: 600 !important; }
+            .shimmer-block { padding: 16px 14px; }
+            .shimmer-block h2 { font-size: 0.85rem; letter-spacing: 2px; }
+            .shimmer-block p { font-size: 0.85rem; }
+            .source-btn { padding: 6px 12px; font-size: 0.8rem; }
+            .mobile-action-btn { font-size: 0.7rem; min-height: 55px; padding: 10px 6px; }
+        }
+        
+        @media (max-height: 500px) and (orientation: landscape) {
+            .header { display: none; }
+            .video-container { max-height: 90vh; }
+            .controls { max-height: 80vh; overflow-y: auto; }
+        }
+        
+        .mobile-action-bar { display: none; position: absolute; }
+        
+        @media (max-width: 1200px) {
+            .header { position: sticky; top: 0; z-index: 100; background: linear-gradient(180deg, rgba(114,47,55,0.95) 0%, rgba(10,6,8,0.98) 100%); padding: 6px 10px !important; }
+            .controls { display: contents; }
+            .session-section { order: 0; background: linear-gradient(180deg, rgba(217,70,239,0.15), rgba(114,47,55,0.3)); padding: 16px; margin: 10px; border-radius: 12px; border: 2px solid rgba(217,70,239,0.5); box-shadow: 0 0 25px rgba(217,70,239,0.2); }
+            .output-area { display: contents; }
+            .mobile-action-bar { display: flex !important; order: 2; justify-content: space-between; align-items: stretch; gap: 10px; padding: 12px 10px; background: rgba(10,6,8,0.95); border-bottom: 2px solid rgba(212,175,55,0.4); width: 100%; }
+            .mobile-action-btn { flex: 1; display: flex; font-size: 1.1rem; font-weight: 700; flex-direction: column; align-items: center; justify-content: center; padding: 12px 8px; border: 1px solid rgba(212,175,55,0.5); border-radius: 8px; font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: all 0.3s ease; min-height: 65px; }
+            .mobile-action-btn.capture { background: linear-gradient(180deg, #d4af37, #8b6914); color: #0a0608; font-weight: 700; }
+            .mobile-action-btn.capture:active { transform: scale(0.95); }
+            .mobile-action-btn.upload { background: rgba(20,15,18,0.9); color: #06b6d4; border-color: rgba(6,182,212,0.5); flex: 0.7; }
+            .mobile-action-btn.upload:active { background: linear-gradient(180deg, rgba(6,182,212,0.3), rgba(8,145,178,0.4)); }
+            .mobile-recent-still { flex: 1.2; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; position: relative; min-height: 65px; overflow: hidden; }
+            .mobile-recent-still .placeholder-text { color: rgba(244,228,186,0.4); font-size: 0.65rem; font-style: italic; }
+            .mobile-recent-still img { display: none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+            .mobile-recent-still.has-image img { display: block; }
+            .mobile-recent-still.has-image .placeholder-text { display: none; }
+            .mobile-recent-still .still-counter { position: absolute; bottom: 4px; right: 6px; background: rgba(0,0,0,0.7); color: #d4af37; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; }
+            .mobile-action-btn.shop { flex: 1.5; background: rgba(20,15,18,0.9); color: #d4af37; flex-direction: column; gap: 2px; font-size: 0.75rem; }
+            .mobile-action-btn.shop:active { background: linear-gradient(180deg, rgba(212,175,55,0.3), rgba(139,105,20,0.4)); }
+            .mobile-action-btn.shop .shop-line { display: block; }
+            .mobile-action-btn.shop .shop-divider { font-size: 0.6rem; opacity: 0.6; }
+            .prompt-section, .section { order: 4; background: rgba(15,10,12,0.95); padding: 15px; margin: 10px; border-radius: 12px; border: 1px solid rgba(212,175,55,0.4); }
+            #log { display: none !important; order: 100; margin: 10px; }
+            .video-container { order: 3; width: 100vw !important; margin-left: calc(-50vw + 50%); border-radius: 0 !important; }
+            .statement-section { order: 101; width: calc(100vw - 20px); margin: 10px auto; }
+        }
+        .raindrop { position: fixed; border-radius: 50%; pointer-events: none; z-index: 9999; animation: raindropFade ease-out forwards; }
+        @keyframes raindropFade { 0% { transform: scale(0) rotate(0deg); opacity: 0; } 20% { transform: scale(1.2) rotate(90deg); opacity: 1; } 100% { transform: scale(0.8) rotate(360deg); opacity: 0; } }
+        .header-title-row { display: flex; align-items: center; justify-content: center; gap: 20px; }
+        .header-flourish { height: 60px; opacity: 0.7; }
+        .header-flourish.flip { transform: scaleX(-1); }
+        .header-info { display: flex; flex-direction: column; align-items: center; }
+        @media (max-width: 768px) {
+            .header-flourish { height: 30px; }
+            .header-title-row { gap: 10px; }
+        }
+        /* Source Choice Modal */
+        .source-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
+        .source-modal.active { display: flex; }
+        .source-modal-content { background: rgba(15,10,12,0.95); border: 2px solid rgba(212,175,55,0.6); border-radius: 16px; padding: 40px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 0 60px rgba(212,175,55,0.3); }
+        .source-modal h2 { color: #d4af37; font-family: "Cinzel", serif; font-size: 1.5rem; margin-bottom: 10px; text-shadow: 0 0 20px rgba(212,175,55,0.5); }
+        .source-modal p { color: #f4e4ba; font-family: "Cormorant Garamond", serif; font-size: 1rem; margin-bottom: 30px; opacity: 0.8; }
+        .source-modal-btns { display: flex; flex-direction: column; gap: 15px; }
+        .source-modal-btn { padding: 18px 24px; border: 2px solid; border-radius: 10px; font-family: "Cinzel", serif; font-size: 1rem; font-weight: 700; letter-spacing: 2px; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; }
+        .source-modal-btn.webcam { border-color: #d946ef; background: linear-gradient(180deg, rgba(157,23,77,0.25), rgba(112,26,117,0.35)); color: #f0abfc; }
+        .source-modal-btn.webcam:hover { background: linear-gradient(180deg, #d946ef, #a21caf); color: #0a0608; box-shadow: 0 0 30px rgba(217,70,239,0.5); }
+        .source-modal-btn.upload { border-color: #06b6d4; background: linear-gradient(180deg, rgba(6,182,212,0.15), rgba(8,145,178,0.25)); color: #22d3ee; }
+        .source-modal-btn.upload:hover { background: linear-gradient(180deg, #06b6d4, #0891b2); color: #0a0608; box-shadow: 0 0 30px rgba(6,182,212,0.5); }
+        .source-modal-btn .btn-icon { font-size: 1.5rem; display: block; margin-bottom: 5px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
-    <video id="interactiveBg" autoplay loop muted playsinline><source src="Video_2.mov" type="video/quicktime"></video>
-    <div class="bg-overlay"></div>
-    <div id="pulseOverlay"></div>
+    <canvas id="bgCanvas"></canvas>
     <canvas id="particleCanvas"></canvas>
     
     <div class="content">
         <div class="header">
             <div class="header-top"><span>COLUMBUS MUSEUM OF ART</span><span>⚜</span><span>WONDERBALL 2026</span></div>
-            <h1>⚜ BAROQUE MIRROR: DANCE & ENROBE ⚜</h1>
-            <div class="header-sub">Live AI Art Transformation</div>
-            <div class="header-credit">by Krista Faist</div>
+            <h1>⚜ BAROQUE MIRROR: SELF-PORTRAIT ⚜</h1>
+            <div class="header-title-row">
+                <img src="baroque-sticker.png" class="header-flourish" alt="">
+                <div class="header-info">
+                    <div class="header-sub">Live AI Art Transformation</div>
+                    <div class="header-credit">by Krista Faist</div>
+                </div>
+                <img src="baroque-sticker.png" class="header-flourish flip" alt="">
+            </div>
         </div>
         
         <div class="main">
             <div class="controls">
                 <div class="session-section">
-                    <button class="session-btn" id="startBtn">Begin Transformation ⚜</button>
+                    <button class="session-btn" id="startBtn">Begin Session ⚜</button>
                     <button class="session-btn stop" id="stopBtn" style="display:none;">End Session ■</button>
                 </div>
                 
-                <div class="section">
-                    <h3>⚜ Golden Material</h3>
-                    <div class="gold-presets">
-                        <button class="gold-btn active" data-style="polished"><span class="icon">✨</span>Polished</button>
-                        <button class="gold-btn" data-style="antique"><span class="icon">🏺</span>Antique</button>
-                        <button class="gold-btn" data-style="liquid"><span class="icon">💧</span>Liquid</button>
-                        <button class="gold-btn" data-style="baroque"><span class="icon">👑</span>Baroque</button>
-                        <button class="gold-btn" data-style="celestial"><span class="icon">☀️</span>Celestial</button>
-                        <button class="gold-btn" data-style="obsidian"><span class="icon">🖤</span>Obsidian</button>
+                <!-- 2D/3D Mode Toggle -->
+                <div class="mode-toggle-section">
+                    <div class="mode-toggle-container">
+                        <span class="mode-label active" id="label2D" onclick="setMode('2d')">2D PORTRAIT</span>
+                        <div class="mode-switch" id="modeSwitch" onclick="toggleMode()">
+                            <div class="mode-switch-knob"></div>
+                        </div>
+                        <span class="mode-label inactive" id="label3D" onclick="setMode('3d')">3D DANCE</span>
+                    </div>
+                    <div class="mode-indicator" id="modeIndicator">
+                        <strong>Portrait Mode:</strong> Face-preserving baroque paintings
+                    </div>
+                </div>
+                
+                <div class="prompt-section">
+                    <h3>⚜ Prompt</h3>
+                    <div class="prompt-container">
+                        <button class="prompt-btn shuffle" id="shuffleBtn" title="Random Prompt">🎲</button>
+                        <textarea class="prompt-input" id="promptInput" placeholder="Enter custom style prompt or shuffle for inspiration..." rows="3"></textarea>
+                        <button class="prompt-btn apply" id="applyPromptBtn" title="Apply Prompt">Apply</button>
                     </div>
                 </div>
                 
                 <div class="section">
-                    <h3>⚜ Sculpture Controls</h3>
-                    <div class="slider-row"><label>3D Depth <span class="val" id="depthVal">0.45</span></label><input type="range" id="depthSlider" min="20" max="80" value="45"></div>
-                    <div class="slider-row"><label>Gold Intensity <span class="val" id="strengthVal">30</span></label><input type="range" id="strengthSlider" min="10" max="50" value="30"></div>
-                    <div class="slider-row"><label>Edge <span class="val" id="edgeVal">0.35</span></label><input type="range" id="edgeSlider" min="10" max="60" value="35"></div>
-                    <div class="slider-row"><label>Pose <span class="val" id="poseVal">0.50</span></label><input type="range" id="poseSlider" min="20" max="80" value="50"></div>
-                    <div class="slider-row"><label>Blend Mode <span class="val" id="blendVal">Screen</span></label>
-                        <select id="blendSelect" class="blend-select">
-                            <option value="screen">Screen (black→transparent)</option>
-                            <option value="lighten">Lighten</option>
-                            <option value="color-dodge">Color Dodge (intense)</option>
-                            <option value="normal">Normal (no blend)</option>
-                        </select>
+                    <h3>⚜ Master Style</h3>
+                    <div class="style-grid">
+                        <button class="style-btn" data-style="baroque">Baroque</button>
+                        <button class="style-btn" data-style="rococo">Rococo</button>
+                        <button class="style-btn" data-style="caravaggio">Caravaggio</button>
+                        <button class="style-btn" data-style="vermeer">Vermeer</button>
+                        <button class="style-btn" data-style="rembrandt">Rembrandt</button>
+                        <button class="style-btn active" data-style="artemisia">Artemisia</button>
                     </div>
-                    <div class="slider-row"><label>Contrast <span class="val" id="contrastVal">2.0</span></label><input type="range" id="contrastSlider" min="100" max="300" value="200"></div>
-                    <div class="slider-row"><label>Brightness <span class="val" id="brightnessVal">1.2</span></label><input type="range" id="brightnessSlider" min="80" max="200" value="120"></div>
                 </div>
+                
                 
                 <div class="section">
-                    <h3>⚜ Interactive Background</h3>
-                    <div class="bg-grid">
-                        <div class="bg-thumb" data-bg="Video_1.mov"><video src="Video_1.mov" muted loop></video><span class="label">Flow I</span></div>
-                        <div class="bg-thumb active" data-bg="Video_2.mov"><video src="Video_2.mov" muted loop></video><span class="label">Flow II</span></div>
-                        <div class="bg-thumb" data-bg="Video_3.mov"><video src="Video_3.mov" muted loop></video><span class="label">Flow III</span></div>
-                        <div class="bg-thumb" data-bg="Video_4.mov"><video src="Video_4.mov" muted loop></video><span class="label">Flow IV</span></div>
+                    <h3>⚜ Transform Controls</h3>
+                    <div class="slider-row">
+                        <label>AI Strength <span class="val" id="strengthVal">50</span></label>
+                        <input type="range" id="strengthSlider" min="0" max="100" value="50">
                     </div>
-                    <div style="margin-top: 12px;">
-                        <div class="slider-row"><label>BG Opacity <span class="val" id="bgOpacityVal">60%</span></label><input type="range" id="bgOpacitySlider" min="20" max="100" value="60"></div>
-                        <div class="slider-row"><label>BG Speed <span class="val" id="bgSpeedVal">1.0x</span></label><input type="range" id="bgSpeedSlider" min="25" max="200" value="100"></div>
+                    <div class="slider-row">
+                        <label>Prompt Weight <span class="val" id="promptWeightVal">0.47</span></label>
+                        <input type="range" id="promptWeightSlider" min="0" max="100" value="47">
+                    </div>
+                    <div class="slider-row">
+                        <label>Pose <span class="val" id="poseVal">0.30</span></label>
+                        <input type="range" id="poseSlider" min="0" max="100" value="30">
+                    </div>
+                    <div class="slider-row">
+                        <label>Edge <span class="val" id="edgeVal">0.36</span></label>
+                        <input type="range" id="edgeSlider" min="0" max="100" value="36">
+                    </div>
+                    <div class="slider-row">
+                        <label>Depth <span class="val" id="depthVal">0.24</span></label>
+                        <input type="range" id="depthSlider" min="0" max="100" value="24">
+                    </div>
+                    <div class="mode-box">
+                        <div class="mode-labels"><span>🎨 Opulent Oil Painting</span><span>French Revolution Caricatures 📜</span></div>
+                        <input type="range" id="modeSlider" min="0" max="100" value="0">
+                        <div class="mode-value" id="modeValue">Pure Classical</div>
                     </div>
                 </div>
-                
-                <div class="section">
-                    <h3>⚜ Audio & Motion Reactivity</h3>
-                    <div class="slider-row"><label>Mic Sensitivity <span class="val" id="audioVal">70%</span></label><input type="range" id="audioSlider" min="0" max="100" value="70"></div>
-                    <div class="slider-row"><label>Motion Sensitivity <span class="val" id="motionVal">60%</span></label><input type="range" id="motionSlider" min="0" max="100" value="60"></div>
-                    <div class="slider-row"><label>Particle Density <span class="val" id="particleVal">50%</span></label><input type="range" id="particleSlider" min="10" max="100" value="50"></div>
-                    <div class="audio-section"><h4>🎵 Live Mic Input (no sound output)</h4><div class="audio-meter" id="audioMeter"></div></div>
-                </div>
-                
-                <div id="log">⚜ Golden Mirror ready...</div>
+
+                <div id="log">⚜ Baroque Mirror ready...</div>
             </div>
             
             <div class="output-area">
                 <div class="video-container" id="videoContainer">
                     <div class="video-wrapper">
-                        <video class="container-bg" id="containerBg" autoplay loop muted playsinline><source src="Video_2.mov" type="video/quicktime"></video>
-                        <video class="output-video" id="output" autoplay playsinline muted></video>
-                        <div class="gold-pulse-overlay" id="goldPulse"></div>
-                        <div class="black-crush-overlay" id="blackCrush"></div>
+                        <video class="output-video" id="output" autoplay playsinline></video>
+                        <canvas class="video-animation-overlay" id="videoOverlay"></canvas>
+                    </div>
+                    <div class="status-overlay" id="statusOverlay">
+                        <div class="status-shimmer-bg">
+                            <div class="status-shimmer-block">
+                        <div class="status-message" id="statusMessage">Negotiating with pixels. Please wait up to 45 seconds...</div>
+                        <div class="status-debug" id="statusDebug"></div>
+                            </div>
+                        </div>
                     </div>
                     <button class="fullscreen-btn" id="fullscreenBtn" title="Toggle Fullscreen">⛶</button>
                     <div class="frame-overlay"></div>
-                    <div class="webcam-pip"><video id="local" autoplay muted playsinline></video></div>
                 </div>
+                <div class="statement-section">
+                    <div class="shimmer-bg">
+                        <div class="shimmer-block">
+                            <h2>Statement</h2>
+                            <p>This portrait system is built on an artist-crafted dataset drawn exclusively from public-domain sources. By using only open archives, the model absorbs visual languages rather than personal likenesses. It learns motifs from Baroque and Rococo ornament, the humor and distortion of early caricature, and the confrontational spirit of French Revolutionary satire.</p>
+                            <p>French Revolutionary caricature was uniquely ferocious, more violent, more confrontational, and more visually ruthless than anything produced before it. It emerged during years when grotesque mockery and extravagant displays of wealth existed in the same rooms, and for a time no one blinked.</p>
+                            <div class="section-divider">. . .</div>
+                            <h2>About</h2>
+                            <p>Historically, jesters entertained elites beneath gilded ceilings (see the <a href="https://www.vam.ac.uk/articles/court-fools-and-jesters" target="_blank">Victoria and Albert Museum's overview</a>). Later, caricature artists appeared at salons and masquerades, where exaggerated portraits were commissioned by the same people who might dismiss them as vulgar in public. Early traditions are richly documented in sources like the <a href="https://www.metmuseum.org/toah/hd/crrn/hd_crrn.htm" target="_blank">Met's survey of caricature</a> and the <a href="https://www.britishmuseum.org/collection/galleries/political-satire" target="_blank">British Museum's political satire collection</a>.</p>
+                            <p>Wealthy patrons often paid handsomely for grotesque works of art that the lowest rung of the hoi polloi would judge tacky at a carnival. Taste, ego, and humor have always been unstable companions. AI heightens this tension: fragile ego is still the best subject, and a robust sense of humor remains the only safe compass. In glamorous rooms, as in history, opulence and satire continue their strange partnership.</p>
+                            <p class="license-note">The Mirror's Echo operates as an unlimited edition under open-source principles (AGPL-3.0), ensuring accessibility while sustaining ongoing development.</p>
+                            <div class="contact-info">
+                                <p><strong>Artist / Technical:</strong> <a href="mailto:kristabluedoor@gmail.com">kristabluedoor@gmail.com</a></p>
+                                <p><strong>Curatorial / Institutional:</strong> <a href="mailto:chaoscontemporarycraft@gmail.com">chaoscontemporarycraft@gmail.com</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="mobile-action-bar">
+                <button class="mobile-action-btn capture" onclick="captureNextSlot()">CAPTURE</button>
+                <label class="mobile-action-btn upload">
+                    📁 UPLOAD
+                    <input type="file" accept="image/*" onchange="handleImageUpload(event)" style="display:none;">
+                </label>
+                <div class="mobile-recent-still" id="mobileRecentStill">
+                    <img src="" alt="Recent capture">
+                    <span class="placeholder-text">No captures</span>
+                    <span class="still-counter" id="stillCounter">0/10</span>
+                </div>
+                <a href="/prints" class="mobile-action-btn shop">
+                    <span class="shop-line">SHOP PRINTS</span>
+                    <span class="shop-divider">⚜</span>
+                    <span class="shop-line">MINT NFTs</span>
+                </a>
             </div>
             
             <div class="capture-panel">
-                <a href="baroque-prints.html" class="purchase-btn-large"><span class="purchase-line">Shop Prints</span><span class="purchase-divider">⚜</span><span class="purchase-line">Mint NFTs</span></a>
-                <div class="capture-panel-header"><h3>⚜ Captures</h3></div>
+                <div class="input-preview-section">
+                    <h4>⚜ Live Input</h4>
+                    <div class="webcam-pip"><video id="local" autoplay muted playsinline></video><canvas id="uploadedImageCanvas" style="display:none;"></canvas></div>
+                    <div class="source-hint">Switch source anytime:</div>
+                    <div class="source-toggle">
+                        <button class="source-btn active" id="webcamBtn" onclick="switchToWebcam()">📷 Live</button>
+                        <label class="source-btn" id="uploadBtn">
+                            📁 Image
+                            <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)" style="display:none;">
+                        </label>
+                    </div>
+                </div>
+                
+                <a href="/prints" class="purchase-btn-large" id="purchaseBtn">
+                    <span class="purchase-line">Shop Prints</span>
+                    <span class="purchase-divider">⚜</span>
+                    <span class="purchase-line">Mint NFTs</span>
+                </a>
+                
+                <button class="capture-btn-large" onclick="captureAndPush()">📸 Capture / Add Source Images</button>
+                
+                
                 <div class="capture-grid">
-                    <div class="capture-slot" data-slot="1"><span class="capture-slot-number">I</span><img src="" alt="Capture 1"><button class="capture-btn" onclick="captureStill(1)">Capture Still</button></div>
-                    <div class="capture-slot" data-slot="2"><span class="capture-slot-number">II</span><img src="" alt="Capture 2"><button class="capture-btn" onclick="captureStill(2)">Capture Still</button></div>
-                    <div class="capture-slot" data-slot="3"><span class="capture-slot-number">III</span><img src="" alt="Capture 3"><button class="capture-btn" onclick="captureStill(3)">Capture Still</button></div>
-                    <div class="capture-slot" data-slot="4"><span class="capture-slot-number">IV</span><img src="" alt="Capture 4"><button class="capture-btn" onclick="captureStill(4)">Capture Still</button></div>
-                    <div class="capture-slot" data-slot="5"><span class="capture-slot-number">V</span><img src="" alt="Capture 5"><button class="capture-btn" onclick="captureStill(5)">Capture Still</button></div>
-                    <div class="capture-slot" data-slot="6"><span class="capture-slot-number">VI</span><img src="" alt="Capture 6"><button class="capture-btn" onclick="captureStill(6)">Capture Still</button></div>
+                    <div class="capture-slot has-image" data-slot="1"><img src="samples/sample1.png" alt="" style="display:block;"></div>
+                    <div class="capture-slot has-image" data-slot="2"><img src="samples/sample2.png" alt="" style="display:block;"></div>
+                    <div class="capture-slot has-image" data-slot="3"><img src="samples/sample3.png" alt="" style="display:block;"></div>
+                    <div class="capture-slot has-image" data-slot="4"><img src="samples/sample4.png" alt="" style="display:block;"></div>
+                    <div class="capture-slot has-image" data-slot="5"><img src="samples/sample5.png" alt="" style="display:block;"></div>
+                    <div class="capture-slot placeholder" data-slot="6"><img src="" alt="" style="display:none;"></div>
+                    <div class="capture-slot placeholder" data-slot="7"><img src="" alt="" style="display:none;"></div>
+                    <div class="capture-slot placeholder" data-slot="8"><img src="" alt="" style="display:none;"></div>
+                    <div class="capture-slot placeholder" data-slot="9"><img src="" alt="" style="display:none;"></div>
                 </div>
             </div>
         </div>
     </div>
+
     <canvas id="captureCanvas" style="display:none;"></canvas>
 
 <script>
+// ============================================
+// CONFIGURATION
+// ============================================
 const API_KEY = 'sk_9bFt6nHdK1T6AXG6knDS3K57u1BTS6xe9FiwqwQW52KoK7UpqBBEYnmPGxFvLJmS';
 const API_BASE = 'https://api.daydream.live/v1';
 const PIPELINE_ID = 'pip_qpUgXycjWF6YMeSL';
+const MODEL_ID = 'stabilityai/sdxl-turbo';
 
+// ============================================
+// STATE
+// ============================================
 let localStream, inputPC, streamId, playbackId, hls, pollTimer;
-let audioContext, analyser, audioDataArray;
-let currentStyle = 'polished';
-let params = { strength: 30, pose: 0.50, edge: 0.35, depth: 0.45 };
-let audioParams = { intensity: 0.70, particleDensity: 0.50, motionSensitivity: 0.60 };
-let bgParams = { opacity: 0.60, speed: 1.0 };
+let countdownTimer = null;
+let countdownValue = 45;
+let statusDebugLines = [];
+let audioContext, analyser, audioDataArray, micSource;
+let currentStyle = 'artemisia';
+let modeValue = 0;
+let customPrompt = '';
+let params = { strength: 50, promptWeight: 0.47, pose: 0.30, edge: 0.36, depth: 0.24, bgTrans: 0 };
+let audioParams = { intensity: 0.75, pulseSpeed: 0.5, particleDensity: 0.6 };
 let capturedStills = {};
+
+// 2D/3D Mode State
+let currentMode = '2d'; // '2d' = portrait (face-preserving), '3d' = dance (pose-based)
+let audioLevels = new Array(32).fill(0);
 let smoothedAudio = new Array(32).fill(0);
 let bassLevel = 0, midLevel = 0, highLevel = 0;
+let overallLevel = 0;
+let prevFrame = null;
+let motionLevel = 0;
+let motionSmoothed = 0;
+let animationId;
+let time = 0;
 let particles = [];
-const MAX_PARTICLES = 200;
-let animationId, time = 0;
+const MAX_PARTICLES = 300;
 
+// 🌈 WHIPPED CREAM KALEIDOSCOPE RAINBOW
+const candyPrompts = [
+    "whipped cream kaleidoscope rainbow",
+    "marshmallow gumball",
+    "soda pop and candy kaleidoscope",
+    "tumbling inside of a rainbow kaleidoscope full of dichroic glass confetti and iridescent sequins",
+    "dichroic glass confetti and iridescent sequins",
+    "holographic soda pop fizz and candy wrapper kaleidoscope",
+    "glitter bomb explosion inside a snow globe",
+    "neon electric cotton candy clouds",
+    "bubble wrap popping in slow motion with rainbow light",
+    "gummy avalanche in crystal cave",
+    "disco ball fragments floating in honey",
+    "sprinkles tornado inside a cupcake",
+    "jelly bean waterfall over chrome sculpture",
+    "soap bubble cathedral with stained glass reflections"
+];
+
+// 🎨 BAROQUE ABSTRACT
+const baroquePrompts = [
+    "baroque acanthus scroll, luminous mechanical cells pulsing with bioluminescence",
+    "rococo seashell motif, fibonacci spiral in mother of pearl and gold leaf",
+    "baroque cartouche, living cells dividing within ornate gilded frame",
+    "gilded baroque frame containing swirling galaxy of tiny stars",
+    "ornate rococo mirror reflecting infinite recursive golden frames",
+    "baroque ceiling fresco, trompe l'oeil clouds with bioluminescent edges",
+    "gilded acanthus leaves unfurling in time-lapse, gold and green",
+    "baroque pearl drop earring, lustrous sphere in golden filigree",
+    "ornate snuff box enamel, miniature painting in jeweled frame",
+    "gilded book spine details, leather and gold tooling patterns"
+];
+
+// Combined for shuffle
+const promptInspirations = [...candyPrompts, ...baroquePrompts];
+
+
+const satireCaptions = [
+    "grotesquely enlarged features emphasizing vanity and pride",
+    "exaggerated aristocratic pose mocking pretension",
+    "symbolic objects orbiting figure in allegorical chaos",
+    "towering powdered wig defying architectural logic",
+    "medals and ribbons multiplied to absurd profusion",
+    "bloated proportions suggesting moral excess",
+    "caricatured expression revealing inner corruption",
+    "satirical props undermining dignified pretense",
+    "cartoonish rendering of pompous self-importance",
+    "symbolic animals commenting on human folly",
+    "exaggerated costume overwhelming diminished figure",
+    "ironic juxtaposition of grandeur and absurdity",
+    "grotesque physiognomy exposing character flaws",
+    "theatrical staging pushed to ridiculous extreme",
+    "symbolic decay beneath surface of opulence",
+    "exaggerated gesture suggesting empty rhetoric",
+    "cartoonish embellishments mocking social climbing",
+    "absurd accessories revealing misplaced priorities",
+    "grotesque distortion of aristocratic conventions",
+    "satirical commentary through visual exaggeration",
+    "inflated ego rendered in literal physical terms",
+    "symbolic weight of office crushing bearer",
+    "exaggerated finery contrasting with base nature",
+    "cartoonish simplification exposing essential character",
+    "grotesque amalgamation of status symbols",
+    "satirical reversal of portrait conventions",
+    "exaggerated shadow suggesting hidden nature",
+    "symbolic props commenting on abuse of power",
+    "cartoonish rendering of social pretension",
+    "grotesque physiognomy revealing moral character",
+    "absurdly tall wig sprouting candelabras as visual satire",
+    "aristocratic vanity exaggerated through reflective surfaces",
+    "cartoonish embellishments amplifying pomp and self-importance",
+    "ridiculous footwear featuring miniature staircases for humor",
+    "ornamental chaos symbolizing excess and decline",
+    "caricatured expression highlighting arrogance and fragility",
+    "symbolic animals acting as allegorical companions",
+    "decorative overload turning costume into comedic punishment",
+    "swirling cartoon lines exaggerating dramatic gesture",
+    "satirical props metaphorically capturing misguided ambition",
+    "exaggerated facial features echoing political-cartoon tradition",
+    "ornate patterns swallowing the character in symbolic excess",
+    "character weighed down by absurd decorative accessories",
+    "figure surrounded by floating allegorical symbols",
+    "vanity portrayed through multiple hand-held mirrors",
+    "satirical exaggeration of status through decorative clutter",
+    "collapsing wig structure symbolizing pretension",
+    "cartoon metaphor rendered through rococo ornament",
+    "exaggerated gesture implying pompous self-importance",
+    "rococo excess weaponized as humorous critique"
+];
+
+const caricaturePrompts = [
+    "Gillray-style biting satire, chin retreating from responsibility, buttons multiplied beyond sanity, mice nibbling at the foundations, velvet curtains revealing emptiness behind",
+    "exaggerated physiognomy, nose bulging with inherited hauteur, wig bending under the weight of hubris, thrones buckling under bloated egos",
+    "divine light piercing darkness, jewels weighing down the absurdly overdressed, alla prima confidence, trompe l'oeil pretension",
+    "divine light piercing darkness, lace collar sharp enough to decapitate, oil painting texture, intimate chamber scene",
+    "ancien regime mockery, neck craning toward imagined importance, brocade drowning the figure in golden excess, gold leaf peeling to reveal rot beneath",
+    "speech bubbles of pompous nonsense, hands clutching invisible scepters, fabric patterns swallowing the wearer whole, chandeliers swaying ominously",
+    "dramatic Baroque lighting, ruffles blooming into textile madness, alla prima confidence, isolated figure against void",
+    "speech bubbles of pompous nonsense, cheeks flushed with champagne hubris, fabric patterns swallowing the wearer whole, gilded frames cracking at the edges",
+    "grotesque aristocratic features, nose bulging with inherited hauteur, embroidery depicting delusions of grandeur, gilded frames cracking at the edges",
+    "Gillray-style biting satire, brow furrowed with dynastic concerns, ermine trim suggesting borrowed majesty, gold leaf peeling to reveal rot beneath",
+    "speech bubbles of pompous nonsense, neck craning toward imagined importance, silk ribbons multiplying like courtly parasites, gilded frames cracking at the edges",
+    "speech bubbles of pompous nonsense, eyes bulging with aristocratic entitlement, brocade drowning the figure in golden excess, chandeliers swaying ominously",
+    "aristocratic absurdity exposed, lips pursed in performative disdain, lace collar sharp enough to decapitate, gilded frames cracking at the edges",
+    "Caravaggesque spotlight, powdered tower of hair defying gravity, oil painting texture, swirling Baroque drama, columns listing toward inevitable fall",
+    "theatrical illumination, wig bending under the weight of hubris, rich oil pigments, centralized vanity",
+    "divine light piercing darkness, fabric patterns swallowing the wearer whole, alla prima confidence, diagonal dynamism, cake towers threatening to collapse",
+    "aristocratic absurdity exposed, lips pursed in performative disdain, velvet so deep one could drown in it, thrones buckling under bloated egos",
+    "Gillray-style biting satire, nose bulging with inherited hauteur, buttons multiplied beyond sanity, serpents coiled in courtly corners, hourglass running out in the background",
+    "Hogarth moral commentary, cheeks flushed with champagne hubris, fabric patterns swallowing the wearer whole, mice nibbling at the foundations, columns listing toward inevitable fall",
+    "Gillray-style biting satire, hands clutching invisible scepters, wig sprouting architectural fantasies, velvet curtains revealing emptiness behind",
+    "aristocratic absurdity exposed, cheeks flushed with champagne hubris, wig sprouting architectural fantasies, hourglass running out in the background",
+    "political caricature, cheeks flushed with champagne hubris, wig sprouting architectural fantasies, thrones buckling under bloated egos",
+    "harsh light revealing all flaws, wig bending under the weight of hubris, glazed shadows, intimate chamber scene, mice nibbling at the foundations",
+    "aristocratic absurdity exposed, nose bulging with inherited hauteur, periwig cascading like frozen waterfalls, scepters wilting in weak grips",
+    "theatrical illumination, jewels weighing down the absurdly overdressed, masterful rendering, pyramidal arrangement",
+    "political caricature, hands clutching invisible scepters, powdered tower of hair defying gravity, cherubs overhead with knowing smirks, crowns slipping from unworthy heads",
+    "theatrical illumination, ermine trim suggesting borrowed majesty, impasto highlights, diagonal dynamism",
+    "harsh light revealing all flaws, embroidery depicting delusions of grandeur, impasto highlights, intimate chamber scene",
+    "exaggerated physiognomy, cheeks flushed with champagne hubris, velvet so deep one could drown in it, parrots repeating empty platitudes, storm clouds gathering beyond the window",
+    "exaggerated physiognomy, posture rigid with false dignity, buttons multiplied beyond sanity, hourglass running out in the background",
+    "grotesque aristocratic features, eyes bulging with aristocratic entitlement, golden threads spelling out inherited shame, crowns slipping from unworthy heads",
+    "Hogarth moral commentary, nose bulging with inherited hauteur, wig sprouting architectural fantasies, cake towers threatening to collapse",
+    "tenebrism chiaroscuro, buttons multiplied beyond sanity, sfumato edges, intimate chamber scene, butterflies representing fleeting power",
+    "shadow play of moral ambiguity, brocade drowning the figure in golden excess, layered translucency, diagonal dynamism",
+    "political caricature, hands clutching invisible scepters, silk ribbons multiplying like courtly parasites, monkeys with mirrors reflecting truth, thrones buckling under bloated egos",
+    "candlelit intimacy, jewels weighing down the absurdly overdressed, alla prima confidence, swirling Baroque drama",
+    "Hogarth moral commentary, jowls trembling with indignation, brocade drowning the figure in golden excess, butterflies representing fleeting power, storm clouds gathering beyond the window",
+    "divine light piercing darkness, fabric patterns swallowing the wearer whole, glazed shadows, centralized vanity, peacocks of vanity preening nearby",
+    "harsh light revealing all flaws, embroidery depicting delusions of grandeur, academic technique, centralized vanity",
+    "revolutionary fervor, hands clutching invisible scepters, brocade drowning the figure in golden excess, thrones buckling under bloated egos",
+    "candlelit intimacy, velvet so deep one could drown in it, academic technique, centralized vanity",
+    "speech bubbles of pompous nonsense, chin retreating from responsibility, buttons multiplied beyond sanity, cracks spreading through marble floors",
+    "symbolic objects of corruption, eyes bulging with aristocratic entitlement, wig bending under the weight of hubris, butterflies representing fleeting power, thrones buckling under bloated egos",
+    "stormy atmospheric glow, golden threads spelling out inherited shame, glazed shadows, intimate chamber scene, butterflies representing fleeting power, velvet curtains revealing emptiness behind",
+    "exaggerated physiognomy, lips pursed in performative disdain, periwig cascading like frozen waterfalls, chandeliers swaying ominously",
+    "revolutionary fervor, lips pursed in performative disdain, powdered tower of hair defying gravity, cracks spreading through marble floors",
+    "Hogarth moral commentary, lips pursed in performative disdain, periwig cascading like frozen waterfalls, scepters wilting in weak grips",
+    "Gillray-style biting satire, posture rigid with false dignity, golden threads spelling out inherited shame, cracks spreading through marble floors",
+    "Hogarth moral commentary, cheeks flushed with champagne hubris, silk ribbons multiplying like courtly parasites, velvet curtains revealing emptiness behind",
+    "symbolic objects of corruption, lips pursed in performative disdain, lace collar sharp enough to decapitate, crowns slipping from unworthy heads",
+    "tenebrism chiaroscuro, ruffles blooming into textile madness, layered translucency, centralized vanity, ravens waiting with patient hunger",
+    "ancien regime mockery, eyes bulging with aristocratic entitlement, golden threads spelling out inherited shame, chandeliers swaying ominously",
+    "grotesque aristocratic features, nose bulging with inherited hauteur, brocade drowning the figure in golden excess, velvet curtains revealing emptiness behind",
+    "revolutionary fervor, eyes bulging with aristocratic entitlement, lace collar sharp enough to decapitate, gilded frames cracking at the edges",
+    "harsh light revealing all flaws, powdered tower of hair defying gravity, academic technique, intimate chamber scene",
+    "candlelit intimacy, lace collar sharp enough to decapitate, sfumato edges, crowded courtly chaos",
+    "speech bubbles of pompous nonsense, hands clutching invisible scepters, buttons multiplied beyond sanity, peacocks of vanity preening nearby, gilded frames cracking at the edges",
+    "candlelit intimacy, silk ribbons multiplying like courtly parasites, sfumato edges, centralized vanity",
+    "ancien regime mockery, nose bulging with inherited hauteur, velvet so deep one could drown in it, cracks spreading through marble floors",
+    "Gillray-style biting satire, chin retreating from responsibility, ermine trim suggesting borrowed majesty, chandeliers swaying ominously",
+    "symbolic objects of corruption, brow furrowed with dynastic concerns, buttons multiplied beyond sanity, gold leaf peeling to reveal rot beneath",
+    "symbolic objects of corruption, hands clutching invisible scepters, powdered tower of hair defying gravity, columns listing toward inevitable fall",
+    "theatrical illumination, velvet so deep one could drown in it, layered translucency, swirling Baroque drama",
+    "shadow play of moral ambiguity, buttons multiplied beyond sanity, alla prima confidence, theatrical composition",
+    "speech bubbles of pompous nonsense, nose bulging with inherited hauteur, powdered tower of hair defying gravity, serpents coiled in courtly corners, storm clouds gathering beyond the window",
+    "exaggerated physiognomy, cheeks flushed with champagne hubris, fabric patterns swallowing the wearer whole, gilded frames cracking at the edges",
+    "golden hour of empire, ermine trim suggesting borrowed majesty, sfumato edges, crowded courtly chaos",
+    "grotesque aristocratic features, posture rigid with false dignity, embroidery depicting delusions of grandeur, columns listing toward inevitable fall",
+    "grotesque aristocratic features, cheeks flushed with champagne hubris, velvet so deep one could drown in it, crowns slipping from unworthy heads",
+    "revolutionary fervor, posture rigid with false dignity, buttons multiplied beyond sanity, columns listing toward inevitable fall",
+    "grotesque aristocratic features, nose bulging with inherited hauteur, silk ribbons multiplying like courtly parasites, velvet curtains revealing emptiness behind",
+    "revolutionary fervor, lips pursed in performative disdain, velvet so deep one could drown in it, velvet curtains revealing emptiness behind",
+    "Caravaggesque spotlight, fabric patterns swallowing the wearer whole, visible brushwork, pyramidal arrangement, ravens waiting with patient hunger",
+    "aristocratic absurdity exposed, lips pursed in performative disdain, ruffles blooming into textile madness, scepters wilting in weak grips",
+    "symbolic objects of corruption, cheeks flushed with champagne hubris, silk ribbons multiplying like courtly parasites, mocking cupids exchanging glances, crowns slipping from unworthy heads",
+    "Hogarth moral commentary, nose bulging with inherited hauteur, wig bending under the weight of hubris, gilded frames cracking at the edges",
+    "candlelit intimacy, fabric patterns swallowing the wearer whole, academic technique, intimate chamber scene, chandeliers swaying ominously",
+    "stormy atmospheric glow, brocade drowning the figure in golden excess, oil painting texture, trompe l'oeil pretension, hourglass running out in the background",
+    "political caricature, jowls trembling with indignation, ermine trim suggesting borrowed majesty, gold leaf peeling to reveal rot beneath",
+    "stormy atmospheric glow, fabric patterns swallowing the wearer whole, rich oil pigments, swirling Baroque drama",
+    "divine light piercing darkness, lace collar sharp enough to decapitate, oil painting texture, diagonal dynamism, parrots repeating empty platitudes",
+    "Gillray-style biting satire, nose bulging with inherited hauteur, buttons multiplied beyond sanity, peacocks of vanity preening nearby, columns listing toward inevitable fall",
+    "aristocratic absurdity exposed, eyes bulging with aristocratic entitlement, golden threads spelling out inherited shame, butterflies representing fleeting power, crowns slipping from unworthy heads",
+    "symbolic objects of corruption, chin retreating from responsibility, jewels weighing down the absurdly overdressed, cake towers threatening to collapse",
+    "stormy atmospheric glow, wig sprouting architectural fantasies, alla prima confidence, trompe l'oeil pretension, cake towers threatening to collapse",
+    "candlelit intimacy, jewels weighing down the absurdly overdressed, glazed shadows, isolated figure against void",
+    "divine light piercing darkness, velvet so deep one could drown in it, layered translucency, pyramidal arrangement",
+    "Caravaggesque spotlight, jewels weighing down the absurdly overdressed, sfumato edges, processional grandeur",
+    "dramatic Baroque lighting, ermine trim suggesting borrowed majesty, masterful rendering, pyramidal arrangement",
+    "revolutionary fervor, posture rigid with false dignity, powdered tower of hair defying gravity, columns listing toward inevitable fall",
+    "divine light piercing darkness, wig bending under the weight of hubris, academic technique, pyramidal arrangement",
+    "candlelit intimacy, powdered tower of hair defying gravity, alla prima confidence, centralized vanity",
+    "revolutionary fervor, nose bulging with inherited hauteur, brocade drowning the figure in golden excess, cake towers threatening to collapse",
+    "exaggerated physiognomy, jowls trembling with indignation, silk ribbons multiplying like courtly parasites, scepters wilting in weak grips",
+    "shadow play of moral ambiguity, wig bending under the weight of hubris, rich oil pigments, theatrical composition",
+    "revolutionary fervor, brow furrowed with dynastic concerns, ermine trim suggesting borrowed majesty, gilded frames cracking at the edges",
+    "Gillray-style biting satire, eyes bulging with aristocratic entitlement, buttons multiplied beyond sanity, storm clouds gathering beyond the window",
+    "divine light piercing darkness, ermine trim suggesting borrowed majesty, alla prima confidence, intimate chamber scene, putti struggling to lift collapsing crowns",
+    "political caricature, posture rigid with false dignity, velvet so deep one could drown in it, cracks spreading through marble floors",
+    "dramatic Baroque lighting, brocade drowning the figure in golden excess, masterful rendering, diagonal dynamism",
+];
 const styles = {
-    polished: { prompt: "ISOLATED golden statue on PURE BLACK VOID, solid 24k gold human figure sculpture, gleaming polished metallic gold surface, dramatic spotlight from above, deep black empty background, museum display lighting, hyper-realistic golden sheen, sharp shadows on black", negative: "background, scenery, environment, room, wall, floor, sky, landscape, nature, furniture, objects, colors, blue, green, red, purple, white background, grey background, gradient, texture behind subject" },
-    antique: { prompt: "ISOLATED bronze statue on PURE BLACK VOID, ancient Greek golden patina sculpture, museum spotlight on black background, classical human figure, oxidized bronze with gold highlights, empty black surroundings, dramatic museum lighting", negative: "background, scenery, environment, room, wall, floor, sky, landscape, nature, furniture, objects, colors, blue, green, red, purple, white background, grey background, gradient, texture behind subject" },
-    liquid: { prompt: "ISOLATED liquid gold figure on PURE BLACK VOID, flowing molten metal human form, mercury-like golden surface, dramatic rim lighting on black, metallic fluid sculpture, empty black background, spotlight illumination", negative: "background, scenery, environment, room, wall, floor, sky, landscape, nature, furniture, objects, colors, blue, green, red, purple, white background, grey background, gradient, texture behind subject" },
-    baroque: { prompt: "ISOLATED baroque gold statue on PURE BLACK VOID, ornate gilded human sculpture, Bernini style golden figure, elaborate rococo details, cathedral spotlight on black background, dramatic shadows into blackness", negative: "background, scenery, environment, room, wall, floor, sky, landscape, nature, furniture, objects, colors, blue, green, red, purple, white background, grey background, gradient, texture behind subject" },
-    celestial: { prompt: "ISOLATED radiant gold deity on PURE BLACK VOID, divine golden human figure, heavenly aureate glow, ethereal rim lighting on black, angelic gold sculpture, luminous against pure darkness, spotlight from above", negative: "background, scenery, environment, room, wall, floor, sky, landscape, nature, furniture, objects, colors, blue, green, red, purple, white background, grey background, gradient, clouds, heaven scene" },
-    obsidian: { prompt: "ISOLATED obsidian figure on PURE BLACK VOID, black glass human sculpture with molten gold veins, glowing gold cracks on dark form, volcanic glass and gold, dramatic lighting on pure black background", negative: "background, scenery, environment, room, wall, floor, sky, landscape, nature, furniture, objects, blue, green, red, purple, white background, grey background, gradient, texture behind subject" }
+    baroque: { base: "baroque masterpiece, dramatic chiaroscuro lighting, Rubens influence, rich oil paint textures, gold leaf accents", caricature: "French Revolution political cartoon, Honoré Daumier style, satirical exaggeration, lithograph texture", colors: { primary: [212, 175, 55], secondary: [114, 47, 55], accent: [244, 228, 186] } },
+    rococo: { base: "rococo painting, Fragonard style, pastel palette, soft romantic lighting, ornamental flourishes", caricature: "French Revolution caricature, James Gillray style, mocking aristocracy", colors: { primary: [255, 182, 193], secondary: [176, 224, 230], accent: [255, 250, 205] } },
+    caravaggio: { base: "Caravaggio tenebrism, extreme chiaroscuro, single dramatic spotlight, biblical intensity", caricature: "Revolutionary propaganda poster, bold contrast, woodcut style", colors: { primary: [139, 69, 19], secondary: [25, 25, 112], accent: [255, 215, 0] } },
+    vermeer: { base: "Vermeer Dutch Golden Age, soft window light, intimate domestic scene, pearl luminosity", caricature: "Dutch satirical print, Bruegel grotesque, peasant caricature", colors: { primary: [70, 130, 180], secondary: [255, 223, 186], accent: [255, 255, 240] } },
+    rembrandt: { base: "Rembrandt self-portrait style, golden brown palette, impasto brushwork, psychological depth", caricature: "Revolutionary broadsheet illustration, Thomas Rowlandson style", colors: { primary: [139, 90, 43], secondary: [85, 60, 42], accent: [218, 165, 32] } },
+    artemisia: { base: "Artemisia Gentileschi style, powerful feminine subjects, dramatic baroque lighting, intense emotional expression", caricature: "Revolutionary feminist pamphlet, fierce women warriors, Liberty Leading the People energy", colors: { primary: [178, 34, 34], secondary: [75, 0, 130], accent: [255, 215, 0] } }
 };
 
-function log(msg, type = '') { const div = document.getElementById('log'); const line = document.createElement('div'); line.className = type; line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`; div.appendChild(line); div.scrollTop = div.scrollHeight; }
+function log(msg, type = '') {
+    const div = document.getElementById('log');
+    const line = document.createElement('div');
+    line.className = type;
+    const timeStr = new Date().toLocaleTimeString();
+    line.textContent = `[${timeStr}] ${msg}`;
+    div.appendChild(line);
+    div.scrollTop = div.scrollHeight;
+    console.log(msg);
+    // Update status debug overlay
+    const statusDebug = document.getElementById('statusDebug');
+    if (statusDebug && document.getElementById('statusOverlay').classList.contains('active')) {
+        statusDebugLines.push({text: `[${timeStr}] ${msg}`, type: type});
+        if (statusDebugLines.length > 5) statusDebugLines.shift();
+        statusDebug.innerHTML = statusDebugLines.map(l => `<div class="status-debug-line ${l.type}">${l.text}</div>`).join('');
+    }
+}
 
-function captureStill(slotNumber) {
+function showStatusOverlay() {
+    const overlay = document.getElementById('statusOverlay');
+    overlay.classList.add('active');
+    countdownValue = 45;
+    statusDebugLines = [];
+    updateCountdown();
+    countdownTimer = setInterval(updateCountdown, 1000);
+}
+
+function updateCountdown() {
+    const msg = document.getElementById('statusMessage');
+    if (countdownValue > 0) {
+        msg.textContent = `Negotiating with pixels. Please wait up to ${countdownValue} seconds...`;
+        countdownValue--;
+    } else {
+
+        msg.textContent = 'Almost there...';
+    }
+}
+
+function hideStatusOverlay() {
+    const overlay = document.getElementById('statusOverlay');
+    overlay.classList.remove('active');
+    if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+    }
+    statusDebugLines = [];
+}
+
+// Default sample images (lazy loaded - won't load until user interacts)
+const defaultSampleImages = [
+    '/samples/sample1.png',
+    '/samples/sample2.png', 
+    '/samples/sample3.png',
+    '/samples/sample4.png',
+    '/samples/sample5.png'
+];
+
+// Initialize capture array (newest first)
+let captureArray = [];
+const MAX_CAPTURES = 5;
+let samplesLoaded = false;
+
+function initializeCaptureGrid() {
+    // Load from localStorage or show empty placeholders
+    const saved = localStorage.getItem('baroqueCaptureArray');
+    if (saved) {
+        captureArray = JSON.parse(saved);
+        // Filter out any old defaults
+        captureArray = captureArray.filter(c => !c.isDefault);
+    }
+    renderCaptureGrid();
+}
+
+function renderCaptureGrid() {
+    for (let i = 0; i < MAX_CAPTURES; i++) {
+        const slot = document.querySelector(`.capture-slot[data-slot="${i + 1}"]`);
+        if (!slot) continue;
+        const img = slot.querySelector('img');
+        // Keep sample images if no user captures
+        if (captureArray[i] && !captureArray[i].isDefault) {
+            img.src = captureArray[i].image;
+            img.style.display = 'block';
+            slot.classList.add('has-image');
+            slot.classList.remove('placeholder');
+        } else if (img.src && img.src.includes('samples/')) {
+            // Keep the sample image
+            img.style.display = 'block';
+            slot.classList.add('has-image');
+            slot.classList.remove('placeholder');
+        } else {
+            // Show styled placeholder - no image loaded
+            img.src = '';
+            img.style.display = 'none';
+            slot.classList.remove('has-image');
+            slot.classList.add('placeholder');
+        }
+    }
+    // Update mobile counter
+    const counter = document.getElementById('stillCounter');
+    if (counter) {
+        counter.textContent = captureArray.length + '/5';
+    }
+}
+
+function captureAndPush() {
     const outputVideo = document.getElementById('output');
     const canvas = document.getElementById('captureCanvas');
     const ctx = canvas.getContext('2d');
     if (!outputVideo.videoWidth) { log('No video to capture yet', 'error'); return; }
-    canvas.width = outputVideo.videoWidth; canvas.height = outputVideo.videoHeight;
-    ctx.drawImage(outputVideo, 0, 0);
-    const dataUrl = canvas.toDataURL('image/png');
-    capturedStills[slotNumber] = { image: dataUrl, timestamp: new Date().toISOString(), style: currentStyle };
-    localStorage.setItem('goldenCaptures', JSON.stringify(capturedStills));
-    const slot = document.querySelector(`.capture-slot[data-slot="${slotNumber}"]`);
-    slot.querySelector('img').src = dataUrl;
-    slot.classList.add('has-image');
-    log(`Still captured to slot ${slotNumber}`, 'success');
+    
+    const maxWidth = 800;
+    const scale = Math.min(1, maxWidth / outputVideo.videoWidth);
+    canvas.width = outputVideo.videoWidth * scale;
+    canvas.height = outputVideo.videoHeight * scale;
+    ctx.drawImage(outputVideo, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+    
+    // Add new capture to front, push others down
+    const newCapture = {
+        image: dataUrl,
+        isDefault: false,
+        timestamp: new Date().toISOString(),
+        style: currentStyle,
+        prompt: customPrompt || styles[currentStyle].base
+    };
+    
+    captureArray.unshift(newCapture);
+    if (captureArray.length > MAX_CAPTURES) {
+        captureArray = captureArray.slice(0, MAX_CAPTURES);
+    }
+    
+    // Save to localStorage
+    try {
+        localStorage.setItem('baroqueCaptureArray', JSON.stringify(captureArray));
+    } catch (e) {
+        localStorage.removeItem('baroqueCaptureArray');
+        log('Storage full - only keeping current session', 'info');
+    }
+    
+    renderCaptureGrid();
+    log('📸 Captured! Others bumped down', 'success');
+    
+    // Update mobile recent still
+    const recentStill = document.getElementById('mobileRecentStill');
+    if (recentStill) {
+        const img = recentStill.querySelector('img');
+        if (img) { img.src = dataUrl; recentStill.classList.add('has-image'); }
+    }
 }
 
-function loadCapturedStills() {
-    const stored = localStorage.getItem('goldenCaptures');
-    if (stored) { capturedStills = JSON.parse(stored); Object.keys(capturedStills).forEach(n => { const slot = document.querySelector(`.capture-slot[data-slot="${n}"]`); if (slot && capturedStills[n]) { slot.querySelector('img').src = capturedStills[n].image; slot.classList.add('has-image'); } }); }
+function captureNextSlot() {
+    captureAndPush();
 }
 
-// Audio analysis from mic input only (no sound output)
-function initAudioAnalysis(stream) {
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.getElementById("uploadedImageCanvas");
+            const ctx = canvas.getContext("2d");
+            const localVideo = document.getElementById("local");
+            
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            
+            // Hide webcam, show canvas
+            localVideo.style.display = "none";
+            canvas.style.display = "block";
+            
+            // Update active states
+            document.getElementById("webcamBtn")?.classList.remove("active");
+            document.getElementById("uploadBtn")?.classList.add("active");
+            
+            log("Using uploaded image as source", "success");
+            
+            // If streaming, update the input
+            if (streamId && inputPC) {
+                const stream = canvas.captureStream(30);
+                const videoTrack = stream.getVideoTracks()[0];
+                const sender = inputPC.getSenders().find(s => s.track?.kind === "video");
+                if (sender && videoTrack) {
+                    sender.replaceTrack(videoTrack);
+                }
+            }
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function switchToWebcam() {
+    const canvas = document.getElementById("uploadedImageCanvas");
+    const localVideo = document.getElementById("local");
+    
+    canvas.style.display = "none";
+    localVideo.style.display = "block";
+    
+    document.getElementById("webcamBtn")?.classList.add("active");
+    document.getElementById("uploadBtn")?.classList.remove("active");
+    
+    log("Switched to webcam", "success");
+    
+    // If streaming, switch back to webcam track
+    if (streamId && inputPC && localStream) {
+        const videoTrack = localStream.getVideoTracks()[0];
+        const sender = inputPC.getSenders().find(s => s.track?.kind === "video");
+        if (sender && videoTrack) {
+            sender.replaceTrack(videoTrack);
+        }
+    }
+}
+
+
+function updateMobileRecentStill(dataUrl, slotNumber) {
+    const recentStill = document.getElementById('mobileRecentStill');
+    const counter = document.getElementById('stillCounter');
+    if (recentStill && counter) {
+        const img = recentStill.querySelector('img');
+        if (img) { img.src = dataUrl; recentStill.classList.add('has-image'); }
+        counter.textContent = captureArray.length + '/5';
+    }
+}
+
+function captureStill(slotNumber) {
+    captureAndPush();
+}
+
+function loadCapturedStills() { initializeCaptureGrid(); }
+
+function shufflePrompt() {
+    let allPrompts;
+    if (modeValue < 50) {
+        allPrompts = promptInspirations;
+    } else if (modeValue > 50) {
+        allPrompts = satireCaptions;
+    } else {
+
+        allPrompts = Math.random() < 0.5 ? satireCaptions : promptInspirations;
+    }
+    const randomPrompt = allPrompts[Math.floor(Math.random() * allPrompts.length)];
+    document.getElementById('promptInput').value = randomPrompt;
+    customPrompt = randomPrompt;
+    log('Prompt rolled & applied', 'success');
+    if (streamId) setParams();
+}
+
+function applyCustomPrompt() {
+    customPrompt = document.getElementById('promptInput').value.trim();
+    if (customPrompt) { log(`Custom prompt applied: "${customPrompt.substring(0, 50)}..."`, 'success'); if (streamId) setParams(); }
+    else { log('Using default style prompt', 'info'); }
+}
+
+function initAudio(stream) {
     try {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioContext.createAnalyser(); 
-        analyser.fftSize = 256; 
-        analyser.smoothingTimeConstant = 0.8;
-        
-        // Connect mic to analyser only - NOT to destination (no sound output)
-        const micSource = audioContext.createMediaStreamSource(stream);
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.7;
+        micSource = audioContext.createMediaStreamSource(stream);
         micSource.connect(analyser);
-        // DO NOT connect to audioContext.destination - this keeps it silent
-        
         audioDataArray = new Uint8Array(analyser.frequencyBinCount);
-        
-        // Create audio meter bars
-        const meter = document.getElementById('audioMeter'); 
+        const meter = document.getElementById('audioMeter'); if (!meter) return;
         meter.innerHTML = '';
-        for (let i = 0; i < 32; i++) { 
-            const bar = document.createElement('div'); 
-            bar.className = 'audio-bar'; 
-            bar.style.height = '4px'; 
-            meter.appendChild(bar); 
-        }
-        log('Mic analysis active (no sound output)', 'success');
-    } catch (e) { 
-        log(`Audio error: ${e.message}`, 'error'); 
-    }
-}
-
-// Motion detection variables
-let motionCanvas, motionCtx, prevFrameData;
-let motionLevel = 0, motionSmoothed = 0;
-
-function initMotionDetection() {
-    motionCanvas = document.createElement('canvas');
-    motionCanvas.width = 64;
-    motionCanvas.height = 48;
-    motionCtx = motionCanvas.getContext('2d', { willReadFrequently: true });
-    log('Motion detection active', 'success');
-}
-
-function detectMotion() {
-    const video = document.getElementById('local');
-    if (!video.videoWidth || !motionCtx) return;
-    
-    motionCtx.drawImage(video, 0, 0, 64, 48);
-    const imageData = motionCtx.getImageData(0, 0, 64, 48);
-    const data = imageData.data;
-    
-    if (prevFrameData) {
-        let diff = 0;
-        for (let i = 0; i < data.length; i += 4) {
-            diff += Math.abs(data[i] - prevFrameData[i]);
-            diff += Math.abs(data[i + 1] - prevFrameData[i + 1]);
-            diff += Math.abs(data[i + 2] - prevFrameData[i + 2]);
-        }
-        motionLevel = (diff / (data.length * 255 / 4)) * audioParams.motionSensitivity;
-        motionSmoothed = motionSmoothed * 0.85 + motionLevel * 0.15;
-    }
-    
-    prevFrameData = new Uint8ClampedArray(data);
+        for (let i = 0; i < 32; i++) { const bar = document.createElement('div'); bar.className = 'audio-bar'; bar.style.height = '4px'; meter.appendChild(bar); }
+        log('Audio analysis initialized', 'success');
+    } catch (e) { log(`Audio init error: ${e.message}`, 'error'); }
 }
 
 function updateAudio() {
     if (!analyser) return;
     analyser.getByteFrequencyData(audioDataArray);
-    const binCount = audioDataArray.length, bassEnd = Math.floor(binCount * 0.15), midEnd = Math.floor(binCount * 0.5);
+    const binCount = audioDataArray.length;
+    const bassEnd = Math.floor(binCount * 0.15);
+    const midEnd = Math.floor(binCount * 0.5);
     let bassSum = 0, midSum = 0, highSum = 0;
-    for (let i = 0; i < binCount; i++) { const val = audioDataArray[i] / 255; if (i < bassEnd) bassSum += val; else if (i < midEnd) midSum += val; else highSum += val; }
-    bassLevel = (bassSum / bassEnd) * audioParams.intensity; 
-    midLevel = (midSum / (midEnd - bassEnd)) * audioParams.intensity; 
+    for (let i = 0; i < binCount; i++) {
+        const val = audioDataArray[i] / 255;
+        if (i < bassEnd) bassSum += val;
+        else if (i < midEnd) midSum += val;
+        else highSum += val;
+    }
+    bassLevel = (bassSum / bassEnd) * audioParams.intensity;
+    midLevel = (midSum / (midEnd - bassEnd)) * audioParams.intensity;
     highLevel = (highSum / (binCount - midEnd)) * audioParams.intensity;
-    for (let i = 0; i < 32; i++) { const idx = Math.floor(i * binCount / 32); smoothedAudio[i] = smoothedAudio[i] * 0.7 + (audioDataArray[idx] / 255) * 0.3; }
-    document.querySelectorAll('.audio-bar').forEach((bar, i) => { bar.style.height = Math.max(4, smoothedAudio[i] * 36) + 'px'; });
-    
-    // Detect motion from webcam
-    detectMotion();
-    
-    // Combined audio + motion reactivity for gold pulse
-    const combinedIntensity = Math.max(bassLevel * 0.7, motionSmoothed * 3);
-    document.getElementById('goldPulse').style.opacity = combinedIntensity * 0.6;
-    document.getElementById('pulseOverlay').style.opacity = combinedIntensity * 0.4;
-    
-    // React background video playback speed to audio + motion
-    const bgSpeed = bgParams.speed * (1 + bassLevel * 0.5 + motionSmoothed * 2);
-    document.getElementById('interactiveBg').playbackRate = Math.min(3, bgSpeed);
-    document.getElementById('containerBg').playbackRate = Math.min(3, bgSpeed);
-    
-    // React background opacity/brightness to audio
-    const bgBrightness = 1 + midLevel * 0.3 + motionSmoothed;
-    document.getElementById('interactiveBg').style.filter = `brightness(${bgBrightness})`;
-    document.getElementById('containerBg').style.filter = `brightness(${bgBrightness})`;
+    overallLevel = (bassLevel + midLevel + highLevel) / 3;
+    for (let i = 0; i < 32; i++) { const idx = Math.floor(i * binCount / 32); audioLevels[i] = audioDataArray[idx] / 255; smoothedAudio[i] = smoothedAudio[i] * 0.7 + audioLevels[i] * 0.3; }
+    const bars = document.querySelectorAll('.audio-bar');
+    bars.forEach((bar, i) => { bar.style.height = Math.max(4, smoothedAudio[i] * 36) + 'px'; });
+}
+
+function initMotionDetection() {
+    const video = document.getElementById('local');
+    const canvas = document.createElement('canvas');
+    canvas.width = 64; canvas.height = 48;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    function detectMotion() {
+        if (!video.videoWidth) return;
+        ctx.drawImage(video, 0, 0, 64, 48);
+        const imageData = ctx.getImageData(0, 0, 64, 48);
+        const data = imageData.data;
+        if (prevFrame) {
+            let diff = 0;
+            for (let i = 0; i < data.length; i += 4) { diff += Math.abs(data[i] - prevFrame[i]) + Math.abs(data[i + 1] - prevFrame[i + 1]) + Math.abs(data[i + 2] - prevFrame[i + 2]); }
+            motionLevel = diff / (data.length * 255 / 4);
+            motionSmoothed = motionSmoothed * 0.8 + motionLevel * 0.2;
+        }
+        prevFrame = new Uint8ClampedArray(data);
+    }
+    setInterval(detectMotion, 50);
+}
+
+function initBackground() {
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    function noise(x, y, z) {
+        const X = Math.floor(x) & 255, Y = Math.floor(y) & 255, Z = Math.floor(z) & 255;
+        x -= Math.floor(x); y -= Math.floor(y); z -= Math.floor(z);
+        function hash(n) { return Math.sin(n * 12.9898 + n * 78.233) * 43758.5453 % 1; }
+        function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+        function lerp(a, b, t) { return a + t * (b - a); }
+        const u = fade(x), v = fade(y), w = fade(z);
+        const a = hash(X + Y * 57 + Z * 113), b = hash(X + 1 + Y * 57 + Z * 113);
+        const c = hash(X + (Y + 1) * 57 + Z * 113), d = hash(X + 1 + (Y + 1) * 57 + Z * 113);
+        const e = hash(X + Y * 57 + (Z + 1) * 113), f = hash(X + 1 + Y * 57 + (Z + 1) * 113);
+        const g = hash(X + (Y + 1) * 57 + (Z + 1) * 113), h = hash(X + 1 + (Y + 1) * 57 + (Z + 1) * 113);
+        return lerp(lerp(lerp(a, b, u), lerp(c, d, u), v), lerp(lerp(e, f, u), lerp(g, h, u), v), w);
+    }
+    function fbm(x, y, z, octaves = 5) {
+        let value = 0, amplitude = 0.5, frequency = 1;
+        for (let i = 0; i < octaves; i++) { value += amplitude * noise(x * frequency, y * frequency, z); amplitude *= 0.5; frequency *= 2; }
+        return value;
+    }
+    function drawBackground() {
+        const w = canvas.width, h = canvas.height;
+        const imageData = ctx.createImageData(w, h);
+        const data = imageData.data;
+        const style = styles[currentStyle];
+        const colors = style.colors;
+        const audioScale = 1 + bassLevel * 0.5;
+        const colorShift = time * 0.01 + midLevel * 2;
+        const pulseIntensity = 0.3 + highLevel * 0.7;
+        const scale = 0.004 * audioScale;
+        const zOffset = time * 0.0003 * audioParams.pulseSpeed;
+        for (let y = 0; y < h; y += 2) {
+            for (let x = 0; x < w; x += 2) {
+                const nx = x * scale, ny = y * scale;
+                const n1 = fbm(nx, ny, zOffset, 4);
+                const n2 = fbm(nx + 100, ny + 100, zOffset + 0.5, 3);
+                const n3 = fbm(nx * 2, ny * 2, zOffset * 2, 2);
+                const curl = Math.sin(n1 * 6 + n2 * 4 + colorShift) * 0.5 + 0.5;
+                const emboss = n3 * 0.3 + curl * 0.7;
+                const dist = Math.sqrt((x - w/2) ** 2 + (y - h/2) ** 2);
+                const pulse = Math.sin(dist * 0.02 - time * 0.002 * audioParams.pulseSpeed + bassLevel * 10) * pulseIntensity;
+                const hue = (emboss * 360 + colorShift * 50 + dist * 0.1) % 360;
+                const sat = 0.6 + emboss * 0.3 + pulse * 0.2;
+                const light = 0.15 + emboss * 0.25 + pulse * 0.1;
+                const rgb = hslToRgb(hue / 360, sat, light);
+                const highlight = Math.pow(Math.max(0, n3 - 0.4) * 2.5, 2) * (0.5 + highLevel);
+                const idx = (y * w + x) * 4;
+                data[idx] = Math.min(255, rgb[0] + highlight * colors.accent[0]);
+                data[idx + 1] = Math.min(255, rgb[1] + highlight * colors.accent[1]);
+                data[idx + 2] = Math.min(255, rgb[2] + highlight * colors.accent[2]);
+                data[idx + 3] = 255;
+                if (x + 1 < w) { data[idx + 4] = data[idx]; data[idx + 5] = data[idx + 1]; data[idx + 6] = data[idx + 2]; data[idx + 7] = 255; }
+                if (y + 1 < h) { const idx3 = idx + w * 4; data[idx3] = data[idx]; data[idx3 + 1] = data[idx + 1]; data[idx3 + 2] = data[idx + 2]; data[idx3 + 3] = 255; if (x + 1 < w) { data[idx3 + 4] = data[idx]; data[idx3 + 5] = data[idx + 1]; data[idx3 + 6] = data[idx + 2]; data[idx3 + 7] = 255; } }
+            }
+        }
+        ctx.putImageData(imageData, 0, 0);
+    }
+    return drawBackground;
+}
+
+function hslToRgb(h, s, l) {
+    let r, g, b;
+    if (s === 0) { r = g = b = l; }
+    else {
+        const hue2rgb = (p, q, t) => { if (t < 0) t += 1; if (t > 1) t -= 1; if (t < 1/6) return p + (q - p) * 6 * t; if (t < 1/2) return q; if (t < 2/3) return p + (q - p) * (2/3 - t) * 6; return p; };
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3); g = hue2rgb(p, q, h); b = hue2rgb(p, q, h - 1/3);
+    }
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
 function initParticles() {
-    const canvas = document.getElementById('particleCanvas'), ctx = canvas.getContext('2d');
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; } resize(); window.addEventListener('resize', resize);
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
     class Particle {
         constructor() { this.reset(); }
-        reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 2; this.size = Math.random() * 3 + 1; this.life = 1; this.decay = Math.random() * 0.01 + 0.005; this.hue = Math.random() * 40 + 35; }
-        update() { 
-            // React to both audio bass and motion
-            const reactivity = bassLevel * 3 + motionSmoothed * 8;
-            this.vx += (Math.random() - 0.5) * reactivity; 
-            this.vy += (Math.random() - 0.5) * reactivity; 
-            this.vx *= 0.98; 
-            this.vy *= 0.98; 
-            this.x += this.vx; 
-            this.y += this.vy; 
-            this.life -= this.decay; 
-            if (this.life <= 0 || this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset(); 
+        reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 2; this.size = Math.random() * 3 + 1; this.life = 1; this.decay = Math.random() * 0.005 + 0.002; this.hue = Math.random() * 60 + 30; }
+        update() {
+            const motionInfluence = motionSmoothed * 10;
+            const angle = Math.atan2(this.y - canvas.height/2, this.x - canvas.width/2);
+            this.vx += Math.sin(angle + time * 0.001) * motionInfluence * 0.1;
+            this.vy += Math.cos(angle + time * 0.001) * motionInfluence * 0.1;
+            this.vx += (Math.random() - 0.5) * bassLevel * 3;
+            this.vy += (Math.random() - 0.5) * bassLevel * 3;
+            this.vx *= 0.98; this.vy *= 0.98;
+            this.x += this.vx; this.y += this.vy;
+            this.displaySize = this.size * (1 + midLevel * 2);
+            this.life -= this.decay;
+            if (this.life <= 0 || this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
         }
-        draw(ctx) { 
+        draw(ctx) {
             const alpha = this.life * 0.6;
-            // Size reacts to mid frequencies and motion
-            const size = this.size * (1 + midLevel * 2 + motionSmoothed * 3); 
-            ctx.save(); 
-            ctx.globalAlpha = alpha; 
-            const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, size * 3); 
-            g.addColorStop(0, `hsla(${this.hue}, 80%, 70%, 1)`); 
-            g.addColorStop(0.4, `hsla(${this.hue}, 70%, 50%, 0.5)`); 
-            g.addColorStop(1, `hsla(${this.hue}, 60%, 30%, 0)`); 
-            ctx.fillStyle = g; 
-            ctx.beginPath(); 
-            ctx.arc(this.x, this.y, size * 3, 0, Math.PI * 2); 
-            ctx.fill(); 
-            ctx.restore(); 
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            const hueShift = (this.hue + time * 0.05 + highLevel * 100) % 360;
+            const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.displaySize * 3);
+            gradient.addColorStop(0, `hsla(${hueShift}, 80%, 70%, 1)`);
+            gradient.addColorStop(0.4, `hsla(${hueShift}, 70%, 50%, 0.5)`);
+            gradient.addColorStop(1, `hsla(${hueShift}, 60%, 30%, 0)`);
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.displaySize * 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = `hsla(${hueShift}, 60%, 90%, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.displaySize, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
         }
     }
-    return { canvas, ctx, Particle };
-}
-
-let particleSystem;
-function drawParticles() {
-    if (!particleSystem) return;
-    const { canvas, ctx, Particle } = particleSystem; ctx.clearRect(0, 0, canvas.width, canvas.height);
     const targetCount = Math.floor(MAX_PARTICLES * audioParams.particleDensity);
-    while (particles.length < targetCount) particles.push(new Particle());
-    while (particles.length > targetCount) particles.pop();
-    particles.forEach(p => { p.update(); p.draw(ctx); });
+    for (let i = 0; i < targetCount; i++) particles.push(new Particle());
+    function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const targetCount = Math.floor(MAX_PARTICLES * audioParams.particleDensity);
+        while (particles.length < targetCount) particles.push(new Particle());
+        while (particles.length > targetCount) particles.pop();
+        if (bassLevel > 0.6 && Math.random() < bassLevel) {
+            const burst = new Particle();
+            burst.x = canvas.width / 2 + (Math.random() - 0.5) * 200;
+            burst.y = canvas.height / 2 + (Math.random() - 0.5) * 200;
+            burst.vx = (Math.random() - 0.5) * 10;
+            burst.vy = (Math.random() - 0.5) * 10;
+            burst.size = 3 + bassLevel * 3;
+            particles.push(burst);
+        }
+        particles.forEach(p => { p.update(); p.draw(ctx); });
+    }
+    return drawParticles;
 }
 
-function animate() { time++; updateAudio(); drawParticles(); animationId = requestAnimationFrame(animate); }
+function initVideoOverlay() {
+    const canvas = document.getElementById('videoOverlay');
+    const ctx = canvas.getContext('2d');
+    function resize() { const wrapper = canvas.parentElement; canvas.width = wrapper.offsetWidth + 40; canvas.height = wrapper.offsetHeight + 40; }
+    resize();
+    window.addEventListener('resize', resize);
+    function drawOverlay() {
+        const w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        const style = styles[currentStyle];
+        const colors = style.colors;
+        const gradient = ctx.createRadialGradient(w/2 + Math.sin(time * 0.01) * 100, h/2 + Math.cos(time * 0.01) * 50, 0, w/2, h/2, Math.max(w, h));
+        const hue1 = (time * 0.5 + bassLevel * 100) % 360;
+        const hue2 = (hue1 + 60) % 360;
+        gradient.addColorStop(0, `hsla(${hue1}, 70%, 50%, ${0.3 + bassLevel * 0.4})`);
+        gradient.addColorStop(0.5, `hsla(${hue2}, 60%, 40%, ${0.1 + midLevel * 0.2})`);
+        gradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, w, h);
+        const particleCount = Math.floor(20 + highLevel * 30);
+        for (let i = 0; i < particleCount; i++) {
+            const angle = (i / particleCount) * Math.PI * 2 + time * 0.002;
+            const radius = Math.max(w, h) * 0.4 + Math.sin(angle * 3 + time * 0.01) * 50;
+            const x = w/2 + Math.cos(angle) * radius;
+            const y = h/2 + Math.sin(angle) * radius;
+            const size = 2 + Math.random() * 3 + bassLevel * 5;
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fillStyle = `hsla(${(hue1 + i * 10) % 360}, 80%, 70%, ${0.3 + highLevel * 0.5})`;
+            ctx.fill();
+        }
+        const edgeGradient = ctx.createLinearGradient(0, 0, w, 0);
+        edgeGradient.addColorStop(0, `rgba(${colors.primary[0]}, ${colors.primary[1]}, ${colors.primary[2]}, ${0.4 + bassLevel * 0.3})`);
+        edgeGradient.addColorStop(0.1, 'transparent');
+        edgeGradient.addColorStop(0.9, 'transparent');
+        edgeGradient.addColorStop(1, `rgba(${colors.primary[0]}, ${colors.primary[1]}, ${colors.primary[2]}, ${0.4 + bassLevel * 0.3})`);
+        ctx.fillStyle = edgeGradient;
+        ctx.fillRect(0, 0, w, h);
+    }
+    return drawOverlay;
+}
 
-// UI Handlers
-document.querySelectorAll('.gold-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('.gold-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentStyle = btn.dataset.style; log(`Style: ${currentStyle.toUpperCase()}`, 'info'); if (streamId) setParams(); }; });
-document.querySelectorAll('.bg-thumb').forEach(thumb => { thumb.onclick = () => { document.querySelectorAll('.bg-thumb').forEach(t => t.classList.remove('active')); thumb.classList.add('active'); const src = thumb.dataset.bg; document.getElementById('interactiveBg').src = src; document.getElementById('containerBg').src = src; log(`Background: ${thumb.querySelector('.label').textContent}`, 'info'); }; thumb.onmouseenter = () => thumb.querySelector('video').play(); thumb.onmouseleave = () => thumb.querySelector('video').pause(); });
-document.getElementById('depthSlider').oninput = function() { params.depth = this.value / 100; document.getElementById('depthVal').textContent = params.depth.toFixed(2); if (streamId) setParams(); };
+let drawVideoOverlay, drawBackground, drawParticles;
+
+function animate() {
+    time++;
+    updateAudio();
+    if (drawBackground) drawBackground();
+    if (drawParticles) drawParticles();
+    if (drawVideoOverlay) drawVideoOverlay();
+    animationId = requestAnimationFrame(animate);
+}
+
+// UI Event handlers
+let promptDebounceTimer = null;
+document.getElementById('shuffleBtn').onclick = shufflePrompt;
+document.getElementById('promptInput').addEventListener('input', (e) => {
+    if (promptDebounceTimer) clearTimeout(promptDebounceTimer);
+    promptDebounceTimer = setTimeout(() => { if (streamId) applyCustomPrompt(); }, 800);
+});
+document.getElementById('promptInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (promptDebounceTimer) clearTimeout(promptDebounceTimer); applyCustomPrompt(); }
+});
+
+document.querySelectorAll('.style-btn').forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentStyle = btn.dataset.style;
+        log(`Style: ${currentStyle.toUpperCase()}`, 'info');
+        if (streamId) setParams();
+    };
+});
+
+document.getElementById('modeSlider').oninput = function() {
+    modeValue = parseInt(this.value);
+    const labels = ['Pure Classical', 'Mostly Classical', 'Classical Blend', 'Balanced', 'Satirical Blend', 'Mostly Satirical', 'Full Revolutionary'];
+    document.getElementById('modeValue').textContent = labels[Math.min(Math.floor(modeValue / 100 * 7), 6)];
+    if (streamId) setParams();
+};
+
 document.getElementById('strengthSlider').oninput = function() { params.strength = parseInt(this.value); document.getElementById('strengthVal').textContent = params.strength; if (streamId) setParams(); };
-document.getElementById('edgeSlider').oninput = function() { params.edge = this.value / 100; document.getElementById('edgeVal').textContent = params.edge.toFixed(2); if (streamId) setParams(); };
-document.getElementById('poseSlider').oninput = function() { params.pose = this.value / 100; document.getElementById('poseVal').textContent = params.pose.toFixed(2); if (streamId) setParams(); };
-document.getElementById('blendSelect').onchange = function() { document.getElementById('output').style.mixBlendMode = this.value; document.getElementById('blendVal').textContent = this.options[this.selectedIndex].text.split(' ')[0]; log('Blend: ' + this.value, 'info'); };
-document.getElementById('contrastSlider').oninput = function() { const v = this.value / 100; document.getElementById('contrastVal').textContent = v.toFixed(1); updateOutputFilters(); };
-document.getElementById('brightnessSlider').oninput = function() { const v = this.value / 100; document.getElementById('brightnessVal').textContent = v.toFixed(1); updateOutputFilters(); };
-function updateOutputFilters() { const c = document.getElementById('contrastSlider').value / 100; const b = document.getElementById('brightnessSlider').value / 100; document.getElementById('output').style.filter = `contrast(${c}) saturate(1.4) brightness(${b})`; }
-document.getElementById('bgOpacitySlider').oninput = function() { bgParams.opacity = this.value / 100; document.getElementById('bgOpacityVal').textContent = this.value + '%'; document.getElementById('interactiveBg').style.opacity = bgParams.opacity; document.getElementById('containerBg').style.opacity = bgParams.opacity; };
-document.getElementById('bgSpeedSlider').oninput = function() { bgParams.speed = this.value / 100; document.getElementById('bgSpeedVal').textContent = bgParams.speed.toFixed(2) + 'x'; document.getElementById('interactiveBg').playbackRate = bgParams.speed; document.getElementById('containerBg').playbackRate = bgParams.speed; };
-document.getElementById('audioSlider').oninput = function() { audioParams.intensity = this.value / 100; document.getElementById('audioVal').textContent = this.value + '%'; };
-document.getElementById('motionSlider').oninput = function() { audioParams.motionSensitivity = this.value / 100; document.getElementById('motionVal').textContent = this.value + '%'; };
-document.getElementById('particleSlider').oninput = function() { audioParams.particleDensity = this.value / 100; document.getElementById('particleVal').textContent = this.value + '%'; };
-document.getElementById('startBtn').onclick = start;
+document.getElementById('promptWeightSlider').oninput = function() { params.promptWeight = parseInt(this.value) / 100; document.getElementById('promptWeightVal').textContent = params.promptWeight.toFixed(2); if (streamId) setParams(); };
+document.getElementById('poseSlider').oninput = function() { params.pose = parseInt(this.value) / 100; document.getElementById('poseVal').textContent = params.pose.toFixed(2); if (streamId) setParams(); };
+document.getElementById('edgeSlider').oninput = function() { params.edge = parseInt(this.value) / 100; document.getElementById('edgeVal').textContent = params.edge.toFixed(2); if (streamId) setParams(); };
+document.getElementById('depthSlider').oninput = function() { params.depth = parseInt(this.value) / 100; document.getElementById('depthVal').textContent = params.depth.toFixed(2); if (streamId) setParams(); };
+
+document.getElementById('applyPromptBtn').onclick = function() { customPrompt = document.getElementById('promptInput').value.trim(); if (streamId) setParams(); this.textContent = '✓'; this.style.background = 'linear-gradient(135deg, #d4af37, #8b6914)'; this.style.color = '#0a0608'; setTimeout(() => { this.textContent = 'Apply'; this.style.background = ''; this.style.color = ''; }, 1000); };
+
+document.getElementById('startBtn').onclick = showSourceModal;
 document.getElementById('stopBtn').onclick = stop;
-document.getElementById('fullscreenBtn').onclick = function() { const c = document.getElementById('videoContainer'); if (!document.fullscreenElement) c.requestFullscreen?.(); else document.exitFullscreen?.(); };
+document.getElementById('fullscreenBtn').onclick = toggleFullscreen;
+
+function toggleFullscreen() {
+    const container = document.getElementById('videoContainer');
+    if (!document.fullscreenElement) {
+        if (container.requestFullscreen) container.requestFullscreen();
+        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+        else if (container.msRequestFullscreen) container.msRequestFullscreen();
+    } else {
+
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
+    }
+}
+
 document.addEventListener('fullscreenchange', () => { document.getElementById('fullscreenBtn').textContent = document.fullscreenElement ? '✕' : '⛶'; });
+
+function buildPrompt() {
+    if (customPrompt) {
+        let prompt = customPrompt;
+        if (params.bgTrans > 50) prompt += ", transparent background, isolated subject, no background, subject only";
+        else if (params.bgTrans > 20) prompt += ", soft faded background, subject focus, minimal background";
+        return prompt;
+    }
+    const style = styles[currentStyle];
+    let basePrompt;
+    if (modeValue < 15) basePrompt = style.base;
+    else if (modeValue > 85) basePrompt = style.caricature;
+    else { const cw = (100 - modeValue) / 100; const sw = modeValue / 100; basePrompt = `(${style.base}:${cw.toFixed(2)}), (${style.caricature}:${sw.toFixed(2)})`; }
+    if (params.bgTrans > 50) basePrompt += ", transparent background, isolated subject, no background, subject only";
+    else if (params.bgTrans > 20) basePrompt += ", soft faded background, subject focus, minimal background";
+    return basePrompt;
+}
+
+// ============================================
+// RAINBOW WATERMARK SYSTEM (7-10 min timeout)
+// ============================================
+const SESSION_DURATION = 600000;
+const BASE_RAIN_START = 420000;
+let sessionStartTime = null;
+let rainAnimationRunning = false;
+
+const rainColors = [
+    'rgba(255,105,180,0.9)', 'rgba(138,43,226,0.9)', 'rgba(75,0,130,0.9)',
+    'rgba(0,191,255,0.9)', 'rgba(127,255,212,0.9)', 'rgba(255,215,0,0.9)',
+    'rgba(255,140,0,0.9)', 'rgba(255,20,147,0.9)', 'rgba(147,112,219,0.9)'
+];
+
+function createRaindrop(progress) {
+    const drop = document.createElement('div');
+    drop.className = 'raindrop';
+    drop.style.left = Math.random() * window.innerWidth + 'px';
+    drop.style.top = Math.random() * window.innerHeight + 'px';
+    const color1 = rainColors[Math.floor(Math.random() * rainColors.length)];
+    const color2 = rainColors[Math.floor(Math.random() * rainColors.length)];
+    const color3 = rainColors[Math.floor(Math.random() * rainColors.length)];
+    const isTakeover = progress > 0.66;
+    let baseOpacity = isTakeover ? 0.4 + ((progress - 0.66) / 0.34 * 0.5) : 0.15 + (progress * 0.35);
+    let sizeMultiplier = isTakeover ? 1.0 + ((progress - 0.66) / 0.34 * 0.8) : 1.5 - (progress * 0.5);
+    let duration = isTakeover ? 6 - ((progress - 0.66) / 0.34 * 2) + Math.random() * 3 : 10 - (progress * 4) + Math.random() * 4;
+    let glowIntensity = isTakeover ? 30 + (Math.pow((progress - 0.66) / 0.34, 1.5) * 120) : (15 + (progress * 50)) * (2.0 - (progress * 1.2));
+    let baseSize = Math.random() < 0.3 ? 20 + Math.random() * 10 : Math.random() < 0.7 ? 40 + Math.random() * 20 : 40 + Math.random() * 50;
+    if (isTakeover) baseSize *= 1.5;
+    const finalSize = baseSize * sizeMultiplier;
+    drop.style.width = finalSize + 'px';
+    drop.style.height = finalSize + 'px';
+    drop.style.background = 'radial-gradient(circle at 40% 40%, ' + color1.replace('0.9', String(baseOpacity)) + ' 0%, ' + color2.replace('0.9', String(baseOpacity * 0.7)) + ' 30%, ' + color3.replace('0.9', String(baseOpacity * 0.4)) + ' 60%, transparent 100%)';
+    drop.style.boxShadow = '0 0 ' + glowIntensity + 'px ' + (glowIntensity * 0.4) + 'px ' + color1 + ', 0 0 ' + (glowIntensity * 2) + 'px ' + (glowIntensity * 0.8) + 'px ' + color2;
+    drop.style.animationDuration = duration + 's';
+    document.body.appendChild(drop);
+    setTimeout(function() { if (drop.parentNode) drop.parentNode.removeChild(drop); }, duration * 1000);
+}
+
+function runRainAnimation() {
+    if (!sessionStartTime || rainAnimationRunning) return;
+    rainAnimationRunning = true;
+    function animateRain() {
+        if (!sessionStartTime) { rainAnimationRunning = false; return; }
+        const elapsed = Date.now() - sessionStartTime;
+        if (elapsed >= BASE_RAIN_START && elapsed < SESSION_DURATION) {
+            const progress = Math.min((elapsed - BASE_RAIN_START) / (SESSION_DURATION - BASE_RAIN_START), 1.0);
+            const exponentialGrowth = Math.pow(progress, 2.5);
+            let dropProbability = 0.03 * (1 + exponentialGrowth * 30);
+            if (progress > 0.66) { dropProbability *= 1 + ((progress - 0.66) / 0.34 * 6); }
+            if (Math.random() < dropProbability) { createRaindrop(progress); }
+        }
+        if (elapsed < SESSION_DURATION) { requestAnimationFrame(animateRain); }
+        else { window.location.href = '/thankyou.html'; }
+    }
+    animateRain();
+}
+
+function startSessionTimer() {
+    sessionStartTime = Date.now();
+    runRainAnimation();
+    console.log('Session started - rainbow drops at 7min, redirect at 10min');
+}
+
+
+// Source choice modal functions
+function showSourceModal() {
+    document.getElementById("sourceModal").classList.add("active");
+}
+
+function hideSourceModal() {
+    document.getElementById("sourceModal").classList.remove("active");
+}
+
+async function startWithWebcam() {
+    hideSourceModal();
+    useWebcamSource = true;
+    await start();
+}
+
+async function startWithPhotos(event) {
+    hideSourceModal();
+    useWebcamSource = false;
+    const files = event.target.files;
+    if (files.length > 0) {
+        // Load first image to canvas
+        const file = files[0];
+        const img = new Image();
+        img.onload = async function() {
+            const canvas = document.getElementById("uploadedImageCanvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            canvas.style.display = "block";
+            document.getElementById("local").style.display = "none";
+            document.getElementById("webcamBtn").classList.remove("active");
+            document.getElementById("uploadBtn").classList.add("active");
+            await start();
+        };
+        img.src = URL.createObjectURL(file);
+    }
+}
+
+let useWebcamSource = true;
 
 async function start() {
     document.getElementById('startBtn').disabled = true;
+    // Set random sample background during loading
+    const sampleImages = ["samples/sample1.png", "samples/sample2.png", "samples/sample3.png", "samples/sample4.png", "samples/sample5.png", "samples/sample6.png"];
+    const randomSample = sampleImages[Math.floor(Math.random() * sampleImages.length)];
+    document.querySelector(".video-wrapper").style.backgroundImage = `url(${randomSample})`;
+
+    showStatusOverlay();
     try {
-        log('Getting camera & mic...', 'info');
-        // Get video for AI processing, audio ONLY for analysis (not output)
-        localStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } }, 
-            audio: true 
-        });
+        log('Setting up input source...', 'info'); if (useWebcamSource) {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } }, audio: true });
         document.getElementById('local').srcObject = localStream;
-        log('Camera ready', 'success');
-        
-        // Initialize audio analysis from mic (input only, no output)
-        initAudioAnalysis(localStream);
-        
-        // Initialize motion detection
+        log('Camera ready', 'success'); } else { log('Using uploaded photo', 'success'); const canvas = document.getElementById('uploadedImageCanvas'); localStream = canvas.captureStream(30); }
+        initAudio(localStream);
         initMotionDetection();
-        
-        particleSystem = initParticles();
+        drawBackground = initBackground();
+        drawParticles = initParticles();
+        drawVideoOverlay = initVideoOverlay();
         if (!animationId) animate();
-        
-        log('Creating stream...', 'info');
-        // Send ONLY video to Daydream (no audio)
-        const videoOnlyStream = new MediaStream(localStream.getVideoTracks());
-        
-        const createRes = await fetch(`${API_BASE}/streams`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` }, body: JSON.stringify({ pipeline_id: PIPELINE_ID }) });
+        log('Creating Daydream stream...', 'info');
+        const createRes = await fetch(`${API_BASE}/streams`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` }, body: JSON.stringify({ 
+            pipeline_id: PIPELINE_ID,
+            pipeline_params: {
+                prompt: buildPrompt(),
+                delta: 0.7,
+                width: 1024,
+                height: 1024,
+                negative_prompt: 'cgi, 3d render, digital art, video game, plastic, blurry',
+                ip_adapter: { type: 'faceid', scale: 0.5, enabled: true },
+                ip_adapter_style_image_url: styles[currentStyle].styleImage,
+                controlnets: [
+                    { enabled: true, model_id: 'xinsir/controlnet-depth-sdxl-1.0', preprocessor: 'depth_tensorrt', conditioning_scale: 0.5, control_guidance_start: 0, control_guidance_end: 1 },
+                    { enabled: true, model_id: 'xinsir/controlnet-tile-sdxl-1.0', preprocessor: 'feedback', conditioning_scale: 0.1, control_guidance_start: 0, control_guidance_end: 1 }
+                ]
+            }
+        }) });
         if (!createRes.ok) throw new Error(`Create failed: ${createRes.status}`);
-        const data = await createRes.json(); streamId = data.id; playbackId = data.output_playback_id;
-        log(`Stream: ${streamId.slice(-8)}`, 'success');
+        const data = await createRes.json();
+        streamId = data.id;
+        playbackId = data.output_playback_id;
+        log(`Stream created: ${streamId.slice(-8)}`, 'success');
         log('Connecting WebRTC...', 'info');
-        await connectWHIP(data.whip_url, videoOnlyStream);
-        log('Video streaming', 'success');
+        await connectWHIP(data.whip_url);
+        log('Video streaming to AI', 'success');
+        log('AI initializing...', 'info');
         await new Promise(r => setTimeout(r, 3000));
         await setParams();
+        log('Style applied', 'success');
+        log('Waiting for output...', 'info');
         document.getElementById('startBtn').style.display = 'none';
         document.getElementById('stopBtn').style.display = 'block';
         startPolling();
-    } catch (e) { log(`ERROR: ${e.message}`, 'error'); document.getElementById('startBtn').disabled = false; }
+        startSessionTimer();
+    } catch (e) {
+        log(`ERROR: ${e.message}`, 'error');
+        console.error(e);
+        document.getElementById('startBtn').disabled = false;
+    }
 }
 
-async function connectWHIP(whipUrl, streamToSend) {
-    inputPC = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+async function connectWHIP(whipUrl) {
+    inputPC = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] });
     inputPC.oniceconnectionstatechange = () => { log(`ICE: ${inputPC.iceConnectionState}`, inputPC.iceConnectionState === 'connected' ? 'success' : 'info'); };
-    // Send only the provided stream (video only)
-    streamToSend.getTracks().forEach(track => inputPC.addTrack(track, streamToSend));
-    const offer = await inputPC.createOffer(); await inputPC.setLocalDescription(offer);
+    localStream.getTracks().forEach(track => { inputPC.addTrack(track, localStream); });
+    const offer = await inputPC.createOffer();
+    await inputPC.setLocalDescription(offer);
     await new Promise(resolve => { if (inputPC.iceGatheringState === 'complete') resolve(); else { inputPC.onicegatheringstatechange = () => { if (inputPC.iceGatheringState === 'complete') resolve(); }; setTimeout(resolve, 3000); } });
     const res = await fetch(whipUrl, { method: 'POST', headers: { 'Content-Type': 'application/sdp' }, body: inputPC.localDescription.sdp });
     if (!res.ok) throw new Error(`WHIP failed: ${res.status}`);
-    await inputPC.setRemoteDescription({ type: 'answer', sdp: await res.text() });
+    const answer = await res.text();
+    await inputPC.setRemoteDescription({ type: 'answer', sdp: answer });
 }
 
 async function setParams() {
-    const style = styles[currentStyle]; log(`Setting: ${currentStyle}`, 'info');
-    const body = { model_id: "streamdiffusion", pipeline: "live-video-to-video", params: { model_id: "stabilityai/sd-turbo", prompt: style.prompt, negative_prompt: style.negative, num_inference_steps: params.strength, seed: 42, controlnets: [
-        { conditioning_scale: params.pose, enabled: true, model_id: "thibaud/controlnet-sd21-openpose-diffusers", preprocessor: "pose_tensorrt" },
-        { conditioning_scale: params.edge, enabled: true, model_id: "thibaud/controlnet-sd21-hed-diffusers", preprocessor: "soft_edge" },
-        { conditioning_scale: params.depth, enabled: true, model_id: "thibaud/controlnet-sd21-depth-diffusers", preprocessor: "depth_tensorrt" }
-    ]}};
-    try { const res = await fetch(`${API_BASE}/streams/${streamId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` }, body: JSON.stringify(body) }); if (res.ok) log('Params set OK', 'success'); else log(`Params error ${res.status}`, 'error'); } catch (e) { log(`Error: ${e.message}`, 'error'); }
+    const prompt = buildPrompt();
+    const ipScale = (100 - modeValue) / 100;  // Abstract (left) = high ip_adapter, Painting (right) = low
+    
+    let body;
+    
+    if (currentMode === '2d') {
+        // 2D PORTRAIT MODE - Face-preserving with ip_adapter
+        body = { 
+            params: { 
+                model_id: MODEL_ID, 
+                prompt: prompt,
+                delta: 0.7,
+                width: 1024,
+                height: 1024,
+                negative_prompt: 'cgi, 3d render, digital art, video game, plastic, blurry',
+                ip_adapter: { type: 'faceid', scale: 0.5, enabled: true },
+                ip_adapter_style_image_url: styles[currentStyle].styleImage,
+                controlnets: [
+                    { enabled: true, model_id: 'xinsir/controlnet-depth-sdxl-1.0', preprocessor: 'depth_tensorrt', conditioning_scale: params.depth, control_guidance_start: 0, control_guidance_end: 1 },
+                    { enabled: true, model_id: 'xinsir/controlnet-tile-sdxl-1.0', preprocessor: 'feedback', conditioning_scale: 0.1, control_guidance_start: 0, control_guidance_end: 1 }
+                ]
+            } 
+        };
+    } else {
+        // 3D DANCE MODE - Pose-based without face preservation
+        body = {
+            params: {
+                model_id: 'stabilityai/sd-turbo',
+                prompt: prompt,
+                negative_prompt: 'background, scenery, environment, room, wall, floor, sky, landscape, nature, furniture, objects, colors, blue, green, red, purple, white background, grey background, gradient, texture behind subject',
+                num_inference_steps: params.strength,
+                seed: 42,
+                controlnets: [
+                    { conditioning_scale: params.pose, enabled: true, model_id: 'thibaud/controlnet-sd21-openpose-diffusers', preprocessor: 'pose_tensorrt' },
+                    { conditioning_scale: params.edge, enabled: true, model_id: 'thibaud/controlnet-sd21-hed-diffusers', preprocessor: 'soft_edge' },
+                    { conditioning_scale: params.depth, enabled: true, model_id: 'thibaud/controlnet-sd21-depth-diffusers', preprocessor: 'depth_tensorrt' }
+                ]
+            }
+        };
+    }
+    
+    try { 
+        const res = await fetch(`${API_BASE}/streams/${streamId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` }, body: JSON.stringify(body) }); 
+        if (res.ok) log(`Params updated (${currentMode.toUpperCase()} mode)`, 'success');
+        else log(`Patch failed: ${res.status}`, 'error');
+    }
+    catch (e) { log(`Params: ${e.message}`, 'error'); }
 }
 
 function startPolling() {
-    let attempts = 0, hlsConnected = false;
+    let attempts = 0, maxAttempts = 120, hlsConnected = false;
     const poll = async () => {
         attempts++;
         try {
             const res = await fetch(`https://livepeer.studio/api/playback/${playbackId}`);
             const data = await res.json();
-            if (attempts % 5 === 0) log(`Waiting (${attempts})...`, 'info');
-            if (data.meta?.live === 1 && !hlsConnected) { log('LIVE!', 'success'); const hlsUrl = data.meta?.source?.find(s => s.hrn === 'HLS (TS)')?.url; if (hlsUrl) { hlsConnected = true; setTimeout(() => connectHLS(hlsUrl), 1500); } }
-            if (attempts < 120) pollTimer = setTimeout(poll, hlsConnected ? 5000 : 2000);
-        } catch (e) { if (attempts < 120) pollTimer = setTimeout(poll, 3000); }
+            if (attempts % 5 === 0) log(`Waiting for AI output (${attempts})...`, 'info');
+            if (data.meta?.live === 1 && !hlsConnected) {
+                log('STREAM LIVE!', 'success');
+                const hlsUrl = data.meta?.source?.find(s => s.hrn === 'HLS (TS)')?.url;
+                if (hlsUrl) { hlsConnected = true; setTimeout(() => connectHLS(hlsUrl), 1500); }
+                else log('Waiting for HLS URL...', 'info');
+            }
+            if (attempts < maxAttempts) pollTimer = setTimeout(poll, hlsConnected ? 5000 : 2000);
+        } catch (e) { log(`Poll: ${e.message}`, 'info'); if (attempts < maxAttempts) pollTimer = setTimeout(poll, 3000); }
     };
     pollTimer = setTimeout(poll, 3000);
 }
 
 function connectHLS(url) {
-    log('Connecting HLS...', 'info');
+    log(`Connecting HLS...`, 'info');
     const video = document.getElementById('output');
     if (Hls.isSupported()) {
         if (hls) hls.destroy();
-        hls = new Hls({ lowLatencyMode: true, liveSyncDuration: 1, liveMaxLatencyDuration: 5, liveDurationInfinity: true });
-        hls.loadSource(url); hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => { 
-            log('Manifest loaded', 'success'); 
-            video.muted = true; // Ensure no sound output
-            video.play().then(() => log('Golden sculpture live!', 'success')).catch(() => { video.play(); }); 
-        });
-        hls.on(Hls.Events.ERROR, (e, data) => { if (data.fatal) { if (data.type === Hls.ErrorTypes.NETWORK_ERROR) setTimeout(() => hls.startLoad(), 2000); else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError(); } });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) { video.src = url; video.muted = true; video.addEventListener('loadedmetadata', () => video.play()); }
+        hls = new Hls({ lowLatencyMode: true, liveSyncDuration: 0.2, liveMaxLatencyDuration: 1, liveBackBufferLength: 0, maxBufferLength: 1, liveDurationInfinity: true, highBufferWatchdogPeriod: 2, manifestLoadingTimeOut: 20000, manifestLoadingMaxRetry: 6, manifestLoadingRetryDelay: 1000, levelLoadingTimeOut: 20000, levelLoadingMaxRetry: 6, levelLoadingRetryDelay: 1000, fragLoadingTimeOut: 30000, fragLoadingMaxRetry: 6, fragLoadingRetryDelay: 1000, enableWorker: true, startLevel: -1 });
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => { log('Stream manifest loaded', 'success'); video.play().then(() => { log('AI OUTPUT ACTIVE!', 'success'); document.querySelector('.video-wrapper').style.backgroundImage = ''; video.classList.add('playing'); if (navigator.vibrate) navigator.vibrate([50, 30, 50]); hideStatusOverlay(); }).catch(e => { log(`Autoplay blocked - click video to play`, 'info'); hideStatusOverlay(); video.muted = true; video.play().catch(() => {}); }); });
+        hls.on(Hls.Events.ERROR, (e, data) => { log(`HLS: ${data.type} - ${data.details}`, 'info'); if (data.fatal) { switch (data.type) { case Hls.ErrorTypes.NETWORK_ERROR: log('Network error - retrying...', 'info'); setTimeout(() => { hls.startLoad(); }, 2000); break; case Hls.ErrorTypes.MEDIA_ERROR: log('Media error - recovering...', 'info'); hls.recoverMediaError(); break; default: log('Fatal error - please restart', 'error'); break; } } });
+        hls.on(Hls.Events.FRAG_LOADED, () => { if (!video.playing) video.play().catch(() => {}); });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) { video.src = url; video.addEventListener('loadedmetadata', () => { video.play().catch(() => { video.muted = true; video.play(); }); }); log('Native HLS playing', 'success'); }
 }
 
 function stop() {
     if (pollTimer) clearTimeout(pollTimer);
+    hideStatusOverlay();
     if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
     if (inputPC) { inputPC.close(); inputPC = null; }
     if (hls) { hls.destroy(); hls = null; }
     if (audioContext) { audioContext.close(); audioContext = null; }
     if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
     document.getElementById('local').srcObject = null;
+    document.getElementById('output').srcObject = null;
     document.getElementById('output').src = '';
     document.getElementById('startBtn').disabled = false;
     document.getElementById('startBtn').style.display = 'block';
     document.getElementById('stopBtn').style.display = 'none';
-    streamId = null; playbackId = null; particles = [];
-    document.getElementById('particleCanvas').getContext('2d').clearRect(0, 0, window.innerWidth, window.innerHeight);
+    streamId = null;
+    playbackId = null;
+    particles = [];
+    const bgCanvas = document.getElementById('bgCanvas');
+    const particleCanvas = document.getElementById('particleCanvas');
+    bgCanvas.getContext('2d').clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    particleCanvas.getContext('2d').clearRect(0, 0, particleCanvas.width, particleCanvas.height);
     log('Session ended', 'info');
 }
 
+// ============================================
+// 2D/3D MODE TOGGLE FUNCTIONS
+// ============================================
+function toggleMode() {
+    if (currentMode === '2d') {
+        setMode('3d');
+    } else {
+        setMode('2d');
+    }
+}
+
+function setMode(mode) {
+    currentMode = mode;
+    const modeSwitch = document.getElementById('modeSwitch');
+    const label2D = document.getElementById('label2D');
+    const label3D = document.getElementById('label3D');
+    const modeIndicator = document.getElementById('modeIndicator');
+    
+    if (mode === '3d') {
+        modeSwitch.classList.add('mode-3d');
+        label2D.classList.remove('active');
+        label2D.classList.add('inactive');
+        label3D.classList.add('active');
+        label3D.classList.remove('inactive');
+        modeIndicator.innerHTML = '<strong>Dance Mode:</strong> Full-body pose transformation';
+    } else {
+        modeSwitch.classList.remove('mode-3d');
+        label2D.classList.add('active');
+        label2D.classList.remove('inactive');
+        label3D.classList.remove('active');
+        label3D.classList.add('inactive');
+        modeIndicator.innerHTML = '<strong>Portrait Mode:</strong> Face-preserving baroque paintings';
+    }
+    
+    log(`Switched to ${mode.toUpperCase()} mode`, 'info');
+    
+    // Update params if stream is active
+    if (streamId) {
+        setParams();
+    }
+}
+
 window.addEventListener('load', () => {
-    loadCapturedStills();
-    particleSystem = initParticles();
+    initializeCaptureGrid();
+    drawBackground = initBackground();
+    drawParticles = initParticles();
+    drawVideoOverlay = initVideoOverlay();
     function demoAnimate() {
         time++;
         bassLevel = 0.1 + Math.sin(time * 0.02) * 0.05;
         midLevel = 0.1 + Math.sin(time * 0.03) * 0.05;
         highLevel = 0.05 + Math.sin(time * 0.04) * 0.03;
-        drawParticles();
+        motionSmoothed = 0.05;
+        if (drawBackground) drawBackground();
+        if (drawParticles) drawParticles();
         if (!localStream) animationId = requestAnimationFrame(demoAnimate);
     }
     demoAnimate();
 });
+
 </script>
+    <!-- Source Choice Modal -->
+    <div class="source-modal" id="sourceModal">
+        <div class="source-modal-content">
+            <h2>⚜ Choose Your Source ⚜</h2>
+            <p>How would you like to create your portrait?</p>
+            <div class="source-modal-btns">
+                <button class="source-modal-btn webcam" onclick="startWithWebcam()">
+                    <span class="btn-icon">📷</span>
+                    Live Webcam
+                </button>
+                <label class="source-modal-btn upload">
+                    <span class="btn-icon">📁</span>
+                    Upload Photo(s)
+                    <input type="file" id="modalImageUpload" accept="image/*" multiple onchange="startWithPhotos(event)" style="display:none;">
+                </label>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
