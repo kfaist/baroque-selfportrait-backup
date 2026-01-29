@@ -1,14 +1,13 @@
-<!-- deploy-v6-sdxl-turbo -->
-<!-- v5: Only connect HLS when AI is outputting (live=1) -->
+<!-- deploy-v7-abstract-prompts -->
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Baroque Mirror v4 - Diagnostic</title>
+    <title>Baroque Mirror - Abstract Mode</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0a0608; color: #fff; font-family: monospace; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        body { background: #0a0608; color: #fff; font-family: 'Georgia', serif; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .panel { background: rgba(20,15,18,0.9); border: 2px solid #d4af37; border-radius: 8px; padding: 15px; }
         h2 { color: #d4af37; margin-bottom: 15px; font-size: 1.2rem; }
         .video-box { position: relative; background: #000; border-radius: 8px; overflow: hidden; aspect-ratio: 16/9; margin-bottom: 10px; }
@@ -22,55 +21,60 @@
         .btn:hover { background: #d4af37; color: #000; }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn.stop { background: #8b0000; border-color: #ff6b6b; color: #ff6b6b; }
-        #log { background: #000; padding: 10px; border-radius: 4px; height: 300px; overflow-y: auto; font-size: 0.75rem; line-height: 1.4; }
+        #log { background: #000; padding: 10px; border-radius: 4px; height: 200px; overflow-y: auto; font-size: 0.7rem; line-height: 1.4; font-family: monospace; }
         .log-info { color: #88f; }
         .log-success { color: #0f0; }
         .log-error { color: #f00; }
         .log-warn { color: #ff0; }
-        .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
-        .metric { background: rgba(0,0,0,0.5); padding: 10px; border-radius: 4px; text-align: center; }
-        .metric-value { font-size: 1.5rem; color: #d4af37; font-weight: bold; }
-        .metric-label { font-size: 0.7rem; color: #888; }
-        .stage-indicator { display: flex; gap: 5px; margin-bottom: 15px; }
-        .stage { flex: 1; padding: 8px; text-align: center; font-size: 0.7rem; border-radius: 4px; background: #333; }
-        .stage.active { background: #d4af37; color: #000; }
-        .stage.complete { background: #0f0; color: #000; }
-        .stage.error { background: #f00; color: #fff; }
+        
+        /* Prompt Controls */
+        .prompt-section { margin-bottom: 15px; }
+        .prompt-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .shuffle-btn { width: 60px; height: 60px; border: 2px solid #d4af37; background: rgba(20,15,18,0.9); color: #d4af37; cursor: pointer; border-radius: 8px; font-size: 2rem; transition: all 0.3s; flex-shrink: 0; }
+        .shuffle-btn:hover { background: rgba(212,175,55,0.3); transform: scale(1.1) rotate(15deg); }
+        .prompt-display { flex: 1; padding: 12px; border: 1px solid rgba(212,175,55,0.4); background: rgba(0,0,0,0.5); color: #f4e4ba; border-radius: 8px; font-size: 0.9rem; font-style: italic; min-height: 60px; display: flex; align-items: center; }
+        
+        /* Category buttons */
+        .category-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .cat-btn { padding: 8px 16px; border: 1px solid rgba(212,175,55,0.5); background: rgba(20,15,18,0.8); color: #d4af37; cursor: pointer; border-radius: 20px; font-size: 0.8rem; transition: all 0.2s; }
+        .cat-btn:hover, .cat-btn.active { background: #d4af37; color: #000; }
+        
+        .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+        .metric { background: rgba(0,0,0,0.5); padding: 8px; border-radius: 4px; text-align: center; }
+        .metric-value { font-size: 1.2rem; color: #d4af37; font-weight: bold; }
+        .metric-label { font-size: 0.65rem; color: #888; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
     <div class="container">
         <div class="panel">
-            <h2>📹 INPUT (Your Camera → WHIP → Daydream)</h2>
+            <h2>📹 INPUT</h2>
             <div class="video-box">
                 <video id="local" autoplay muted playsinline></video>
                 <div class="status-badge disconnected" id="inputStatus">NO CAMERA</div>
             </div>
-            <div class="metrics">
-                <div class="metric">
-                    <div class="metric-value" id="framesSent">0</div>
-                    <div class="metric-label">Frames Sent</div>
+            
+            <div class="prompt-section">
+                <h2>🎲 PROMPT</h2>
+                <div class="prompt-row">
+                    <button class="shuffle-btn" onclick="shufflePrompt()">🎲</button>
+                    <div class="prompt-display" id="promptDisplay">Click shuffle for magic!</div>
                 </div>
-                <div class="metric">
-                    <div class="metric-value" id="bytesSent">0</div>
-                    <div class="metric-label">KB Sent</div>
-                </div>
-                <div class="metric">
-                    <div class="metric-value" id="iceState">-</div>
-                    <div class="metric-label">ICE State</div>
-                </div>
-                <div class="metric">
-                    <div class="metric-value" id="whipState">-</div>
-                    <div class="metric-label">WHIP State</div>
+                <div class="category-btns">
+                    <button class="cat-btn active" data-cat="all">All</button>
+                    <button class="cat-btn" data-cat="candy">🍬 Candy</button>
+                    <button class="cat-btn" data-cat="baroque">🏛️ Baroque</button>
+                    <button class="cat-btn" data-cat="rococo">🌸 Rococo</button>
                 </div>
             </div>
-            <button class="btn" id="startBtn" onclick="start()">▶ START DIAGNOSTIC SESSION</button>
+            
+            <button class="btn" id="startBtn" onclick="start()">▶ START SESSION</button>
             <button class="btn stop" id="stopBtn" onclick="stop()" style="display:none">■ STOP</button>
         </div>
         
         <div class="panel">
-            <h2>🎨 OUTPUT (Livepeer HLS → Your Screen)</h2>
+            <h2>🎨 OUTPUT</h2>
             <div class="video-box">
                 <video id="output" autoplay playsinline></video>
                 <div class="status-badge disconnected" id="outputStatus">NO STREAM</div>
@@ -78,11 +82,7 @@
             <div class="metrics">
                 <div class="metric">
                     <div class="metric-value" id="aiLive">❌</div>
-                    <div class="metric-label">AI Processing</div>
-                </div>
-                <div class="metric">
-                    <div class="metric-value" id="hlsState">-</div>
-                    <div class="metric-label">HLS State</div>
+                    <div class="metric-label">AI Live</div>
                 </div>
                 <div class="metric">
                     <div class="metric-value" id="pollCount">0</div>
@@ -90,49 +90,97 @@
                 </div>
                 <div class="metric">
                     <div class="metric-value" id="elapsed">0s</div>
-                    <div class="metric-label">Elapsed</div>
+                    <div class="metric-label">Time</div>
                 </div>
             </div>
-            <div class="stage-indicator">
-                <div class="stage" id="stage1">1. Camera</div>
-                <div class="stage" id="stage2">2. Stream</div>
-                <div class="stage" id="stage3">3. WHIP</div>
-                <div class="stage" id="stage4">4. AI</div>
-                <div class="stage" id="stage5">5. HLS</div>
-            </div>
+            <div id="log"></div>
         </div>
-    </div>
-    
-    <div class="panel" style="margin-top: 20px;">
-        <h2>📋 DIAGNOSTIC LOG</h2>
-        <div id="log"></div>
     </div>
 
 <script>
 const API_KEY = 'sk_wdNUnsKxxwH6v64BHMwHaWT39Mhwk5ZrqZzXDRmAXxxAqCgVGusff2Y8jxiBofuP';
 const API_BASE = 'https://api.daydream.live/v1';
-// WORKING CONFIG FROM 3:20 PM 1/28 - this is when it actually looked like Krista's face!
 const PIPELINE_ID = 'pip_SDXL-turbo-faceid';
 
+// ALL THE FUN PROMPTS!
+const prompts = {
+    candy: [
+        "whipped cream kaleidoscope rainbow",
+        "marshmallow gumball",
+        "soda pop and candy kaleidoscope",
+        "tumbling inside of a rainbow kaleidoscope full of dichroic glass confetti and iridescent sequins",
+        "dichroic glass confetti and iridescent sequins",
+        "holographic soda pop fizz and candy wrapper kaleidoscope",
+        "glitter bomb explosion inside a snow globe",
+        "neon electric cotton candy clouds",
+        "bubble wrap popping in slow motion with rainbow light",
+        "gummy avalanche in crystal cave",
+        "disco ball fragments floating in honey",
+        "sprinkles tornado inside a cupcake",
+        "jelly bean waterfall over chrome sculpture",
+        "soap bubble cathedral with stained glass reflections"
+    ],
+    baroque: [
+        "baroque acanthus scroll, luminous mechanical cells pulsing with bioluminescence",
+        "rococo seashell motif, fibonacci spiral in mother of pearl and gold leaf",
+        "baroque cartouche, living cells dividing within ornate gilded frame",
+        "gilded baroque frame containing swirling galaxy of tiny stars",
+        "ornate rococo mirror reflecting infinite recursive golden frames",
+        "baroque ceiling fresco, trompe l'oeil clouds with bioluminescent edges",
+        "gilded acanthus leaves unfurling in time-lapse, gold and green",
+        "baroque pearl drop earring, lustrous sphere in golden filigree",
+        "ornate snuff box enamel, miniature painting in jeweled frame",
+        "gilded book spine details, leather and gold tooling patterns",
+        "painterly brushstrokes, thick impasto, iridescent glaze, rainbow kaleidoscope icing world, high saturation, neon accents, prismatic, electric cyan, magenta, chartreuse, dichroic glass, iridescent pastels, pearlescent haze, watercolor bloom"
+    ],
+    rococo: [
+        "pastel cotton candy clouds, soft pink and powder blue swirls, delicate pearlescent foam, dreamy soft focus, romantic haze, ornamental flourishes dissolving into light",
+        "rococo frivolity expressed through airy pastel tones",
+        "romantic rococo atmosphere with soft diffused light",
+        "swirling composition echoing rococo decorative forms",
+        "rococo ornament dissolving into decorative abstraction",
+        "exuberant rococo scrollwork accenting the background",
+        "decorative pastel motifs swirling around the figure",
+        "painterly rococo extravagance with intricate details"
+    ]
+};
+
+let currentCategory = 'all';
+let currentPrompt = "whipped cream kaleidoscope rainbow";
 let localStream, inputPC, streamId, playbackId, hls;
-let pollTimer, statsTimer, elapsedTimer;
-let startTime;
+let pollTimer, statsTimer, elapsedTimer, startTime;
 
 function log(msg, type = 'info') {
     const div = document.getElementById('log');
     const line = document.createElement('div');
     line.className = 'log-' + type;
-    const time = new Date().toLocaleTimeString();
-    line.textContent = `[${time}] ${msg}`;
+    line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
     div.appendChild(line);
     div.scrollTop = div.scrollHeight;
-    console.log(`[${type}] ${msg}`);
 }
 
-function setStage(num, status) {
-    const el = document.getElementById('stage' + num);
-    el.className = 'stage ' + status;
+function shufflePrompt() {
+    let pool;
+    if (currentCategory === 'all') {
+        pool = [...prompts.candy, ...prompts.baroque, ...prompts.rococo];
+    } else {
+        pool = prompts[currentCategory];
+    }
+    currentPrompt = pool[Math.floor(Math.random() * pool.length)];
+    document.getElementById('promptDisplay').textContent = currentPrompt;
+    log(`Prompt: ${currentPrompt.slice(0, 50)}...`, 'info');
+    if (streamId) setParams();
 }
+
+// Category button handlers
+document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCategory = btn.dataset.cat;
+        shufflePrompt();
+    };
+});
 
 function updateMetric(id, value) {
     document.getElementById(id).textContent = value;
@@ -142,29 +190,20 @@ async function start() {
     document.getElementById('startBtn').disabled = true;
     startTime = Date.now();
     
-    // Stage 1: Camera
-    setStage(1, 'active');
-    log('Requesting camera access...', 'info');
+    log('Requesting camera...', 'info');
     try {
-        localStream = await navigator.mediaDevices.getUserMedia({ 
-            video: { width: 1280, height: 720, frameRate: 30 }, 
-            audio: true 
-        });
+        localStream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: true });
         document.getElementById('local').srcObject = localStream;
         document.getElementById('inputStatus').className = 'status-badge connected';
         document.getElementById('inputStatus').textContent = 'CAMERA OK';
-        log(`Camera ready: ${localStream.getVideoTracks()[0].getSettings().width}x${localStream.getVideoTracks()[0].getSettings().height}`, 'success');
-        setStage(1, 'complete');
+        log('Camera ready', 'success');
     } catch (e) {
         log(`Camera error: ${e.message}`, 'error');
-        setStage(1, 'error');
         document.getElementById('startBtn').disabled = false;
         return;
     }
     
-    // Stage 2: Create Stream
-    setStage(2, 'active');
-    log('Creating Daydream stream...', 'info');
+    log('Creating stream...', 'info');
     try {
         const res = await fetch(`${API_BASE}/streams`, {
             method: 'POST',
@@ -176,17 +215,10 @@ async function start() {
         streamId = data.id;
         playbackId = data.output_playback_id;
         log(`Stream: ${streamId}`, 'success');
-        log(`Playback ID: ${playbackId}`, 'info');
-        log(`WHIP URL: ${data.whip_url}`, 'info');
-        setStage(2, 'complete');
         
-        // Stage 3: WHIP
-        setStage(3, 'active');
         await connectWHIP(data.whip_url);
-        
     } catch (e) {
         log(`Stream error: ${e.message}`, 'error');
-        setStage(2, 'error');
         document.getElementById('startBtn').disabled = false;
         return;
     }
@@ -194,148 +226,70 @@ async function start() {
     document.getElementById('startBtn').style.display = 'none';
     document.getElementById('stopBtn').style.display = 'block';
     
-    // Start stats monitoring
-    statsTimer = setInterval(updateStats, 1000);
     elapsedTimer = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        updateMetric('elapsed', elapsed + 's');
+        updateMetric('elapsed', Math.floor((Date.now() - startTime) / 1000) + 's');
     }, 1000);
     
-    // Set params after WHIP connected
     setTimeout(async () => {
-        log('Setting AI parameters...', 'info');
+        log('Setting params...', 'info');
         await setParams();
-        
-        // Stage 4 & 5: AI and HLS
-        setStage(4, 'active');
         startPolling();
     }, 3000);
 }
 
 async function connectWHIP(whipUrl) {
-    log('Creating RTCPeerConnection...', 'info');
-    
     inputPC = new RTCPeerConnection({
-        iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' }
-        ]
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     });
     
     inputPC.oniceconnectionstatechange = () => {
         const state = inputPC.iceConnectionState;
-        updateMetric('iceState', state.toUpperCase());
-        log(`ICE state: ${state}`, state === 'connected' ? 'success' : 'info');
-        
         if (state === 'connected') {
-            document.getElementById('inputStatus').className = 'status-badge connected';
             document.getElementById('inputStatus').textContent = 'STREAMING';
-            setStage(3, 'complete');
-        } else if (state === 'checking') {
-            document.getElementById('inputStatus').className = 'status-badge connecting';
-            document.getElementById('inputStatus').textContent = 'CONNECTING...';
-        } else if (state === 'disconnected' || state === 'failed') {
-            document.getElementById('inputStatus').className = 'status-badge disconnected';
-            document.getElementById('inputStatus').textContent = state.toUpperCase();
-            setStage(3, 'error');
+            log('WHIP connected', 'success');
         }
     };
     
-    inputPC.onicecandidate = (e) => {
-        if (e.candidate) {
-            log(`ICE candidate: ${e.candidate.type} ${e.candidate.protocol}`, 'info');
-        }
-    };
+    localStream.getTracks().forEach(track => inputPC.addTrack(track, localStream));
     
-    // Add tracks
-    localStream.getTracks().forEach(track => {
-        log(`Adding track: ${track.kind}`, 'info');
-        inputPC.addTrack(track, localStream);
-    });
-    
-    // Create offer
-    log('Creating SDP offer...', 'info');
     const offer = await inputPC.createOffer();
     await inputPC.setLocalDescription(offer);
     
-    // Wait for ICE gathering
-    log('Gathering ICE candidates...', 'info');
-    updateMetric('whipState', 'GATHERING');
-    await new Promise(resolve => {
-        if (inputPC.iceGatheringState === 'complete') {
-            resolve();
-        } else {
-            inputPC.onicegatheringstatechange = () => {
-                log(`ICE gathering: ${inputPC.iceGatheringState}`, 'info');
-                if (inputPC.iceGatheringState === 'complete') resolve();
-            };
-            setTimeout(resolve, 10000); // 10s timeout
-        }
+    await new Promise(r => {
+        if (inputPC.iceGatheringState === 'complete') r();
+        else inputPC.onicegatheringstatechange = () => { if (inputPC.iceGatheringState === 'complete') r(); };
+        setTimeout(r, 10000);
     });
     
-    // Send to WHIP
-    log('Sending offer to WHIP endpoint...', 'info');
-    updateMetric('whipState', 'SENDING');
-    const res = await fetch(whipUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/sdp' },
-        body: inputPC.localDescription.sdp
-    });
-    
-    if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`WHIP ${res.status}: ${text}`);
-    }
-    
-    const answer = await res.text();
-    log(`Got WHIP answer (${answer.length} bytes)`, 'success');
-    updateMetric('whipState', 'CONNECTED');
-    
-    await inputPC.setRemoteDescription({ type: 'answer', sdp: answer });
-    log('Remote description set', 'success');
-}
-
-async function updateStats() {
-    if (!inputPC) return;
-    
-    try {
-        const stats = await inputPC.getStats();
-        stats.forEach(s => {
-            if (s.type === 'outbound-rtp' && s.kind === 'video') {
-                updateMetric('framesSent', s.framesSent || 0);
-                updateMetric('bytesSent', Math.floor((s.bytesSent || 0) / 1024));
-            }
-        });
-    } catch (e) {}
+    const res = await fetch(whipUrl, { method: 'POST', headers: { 'Content-Type': 'application/sdp' }, body: inputPC.localDescription.sdp });
+    if (!res.ok) throw new Error(`WHIP ${res.status}`);
+    await inputPC.setRemoteDescription({ type: 'answer', sdp: await res.text() });
 }
 
 async function setParams() {
-    // EXACT WORKING CONFIG FROM COMMIT 41cccbc (3:20 PM 1/28/2026)
+    // Abstract mode - high delta for detailed output, prompts for style
     const body = {
         model_id: "streamdiffusion",
         pipeline: "live-video-to-video",
         params: {
             model_id: "stabilityai/sdxl-turbo",
-            prompt: "baroque oil painting, dramatic chiaroscuro, Rembrandt style, golden light, rich textures, oil painting, traditional media, canvas texture, visible brushstrokes, masterpiece painting",
-            negative_prompt: "text, letters, words, spelling, low quality, blurry, cartoon, anime, manga, illustration, cgi, 3d render, digital art, comic, plastic, smooth skin, airbrushed, video game, unreal engine, octane render, vray, girl, model, babe, fairy, bride, princess",
+            prompt: currentPrompt + ", painterly brushstrokes, thick impasto, iridescent glaze, high saturation, prismatic, pearlescent haze",
+            negative_prompt: "text, letters, words, ugly, blurry, low quality",
             num_inference_steps: 4,
             guidance_scale: 1.5,
-            seed: 42,
-            ip_adapter: {
-                enabled: true,
-                scale: 1.0,
-                type: "faceid"
-            }
+            delta: 0.85,
+            seed: Math.floor(Math.random() * 10000)
         }
     };
     
     try {
-        await fetch(`${API_BASE}/streams/${streamId}`, {
+        const res = await fetch(`${API_BASE}/streams/${streamId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
             body: JSON.stringify(body)
         });
-        log('AI params set', 'success');
+        if (res.ok) log('Params set!', 'success');
+        else log(`Params failed: ${res.status}`, 'warn');
     } catch (e) {
         log(`Params error: ${e.message}`, 'warn');
     }
@@ -352,118 +306,52 @@ function startPolling() {
         try {
             const res = await fetch(`https://livepeer.studio/api/playback/${playbackId}`);
             const data = await res.json();
-            
             const isLive = data.meta?.live === 1;
             
-            if (isLive) {
-                updateMetric('aiLive', '✅');
-                setStage(4, 'complete');
-                
-                if (!hlsConnected) {
-                    log('AI is outputting video - waiting for HLS manifest...', 'success');
-                    hlsConnected = true;
-                    // Wait 3 seconds for HLS manifest to be ready
-                    setTimeout(() => {
-                        const hlsUrl = data.meta?.source?.find(s => s.hrn === 'HLS (TS)')?.url 
-                                  || `https://livepeercdn.studio/hls/${playbackId}/index.m3u8`;
-                        log(`HLS URL: ${hlsUrl}`, 'info');
-                        connectHLS(hlsUrl);
-                    }, 3000);
-                }
-            } else {
-                updateMetric('aiLive', '❌');
-                if (pollCount % 5 === 0) {
-                    log(`Poll ${pollCount}: AI warming up (live=${data.meta?.live || 0})...`, 'info');
-                }
+            updateMetric('aiLive', isLive ? '✅' : '❌');
+            
+            if (isLive && !hlsConnected) {
+                hlsConnected = true;
+                log('AI live! Connecting HLS...', 'success');
+                setTimeout(() => {
+                    const hlsUrl = `https://livepeercdn.studio/hls/${playbackId}/index.m3u8`;
+                    connectHLS(hlsUrl);
+                }, 3000);
             }
             
-            // Keep polling to detect when stream goes live
-            if (pollCount < 180) {  // 6 minutes max
-                pollTimer = setTimeout(poll, isLive ? 5000 : 2000);
-            } else {
-                log('Timeout waiting for AI. Try refreshing.', 'error');
-            }
+            if (pollCount < 180) pollTimer = setTimeout(poll, isLive ? 5000 : 2000);
         } catch (e) {
-            log(`Poll error: ${e.message}`, 'warn');
             if (pollCount < 180) pollTimer = setTimeout(poll, 3000);
         }
     };
     
-    log('Waiting for AI to start processing...', 'info');
     pollTimer = setTimeout(poll, 2000);
 }
 
 function connectHLS(url) {
-    log('Connecting to HLS...', 'info');
-    setStage(5, 'active');
-    updateMetric('hlsState', 'CONNECTING');
-    
     const video = document.getElementById('output');
+    if (hls) hls.destroy();
     
-    if (Hls.isSupported()) {
-        if (hls) hls.destroy();
-        
-        hls = new Hls({
-            lowLatencyMode: true,
-            liveSyncDuration: 0.5,
-            liveMaxLatencyDuration: 2,
-            maxBufferLength: 2,
-            manifestLoadingTimeOut: 30000,
-            manifestLoadingMaxRetry: 10,
-            manifestLoadingRetryDelay: 2000,
-            levelLoadingTimeOut: 30000,
-            levelLoadingMaxRetry: 10,
-            fragLoadingTimeOut: 30000,
-            fragLoadingMaxRetry: 10
-        });
-        
-        hls.loadSource(url);
-        hls.attachMedia(video);
-        
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            log('HLS manifest loaded!', 'success');
-            updateMetric('hlsState', 'PLAYING');
-            document.getElementById('outputStatus').className = 'status-badge connected';
-            document.getElementById('outputStatus').textContent = 'PLAYING';
-            setStage(5, 'complete');
-            video.play().catch(() => { video.muted = true; video.play(); });
-        });
-        
-        hls.on(Hls.Events.ERROR, (event, data) => {
-            if (data.details === 'manifestLoadError' || data.details === 'manifestParsingError') {
-                log(`HLS manifest not ready yet, retrying in 3s...`, 'warn');
-                updateMetric('hlsState', 'WAITING');
-                // Retry after delay
-                setTimeout(() => {
-                    if (hls) {
-                        log('Retrying HLS connection...', 'info');
-                        hls.loadSource(url);
-                    }
-                }, 3000);
-            } else if (data.fatal) {
-                log(`HLS fatal error: ${data.type} - ${data.details}`, 'error');
-                updateMetric('hlsState', 'ERROR');
-                setStage(5, 'error');
-                // Try to recover
-                if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-                    log('Attempting HLS recovery...', 'info');
-                    hls.startLoad();
-                }
-            } else {
-                log(`HLS error: ${data.details}`, 'warn');
-            }
-        });
-        
-        hls.on(Hls.Events.FRAG_LOADED, () => {
-            document.getElementById('outputStatus').className = 'status-badge connected';
-            document.getElementById('outputStatus').textContent = 'RECEIVING';
-        });
-    }
+    hls = new Hls({ lowLatencyMode: true, liveSyncDuration: 0.5, liveMaxLatencyDuration: 2 });
+    hls.loadSource(url);
+    hls.attachMedia(video);
+    
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        log('HLS playing!', 'success');
+        document.getElementById('outputStatus').className = 'status-badge connected';
+        document.getElementById('outputStatus').textContent = 'PLAYING';
+        video.play().catch(() => { video.muted = true; video.play(); });
+    });
+    
+    hls.on(Hls.Events.ERROR, (e, data) => {
+        if (data.details === 'manifestLoadError') {
+            setTimeout(() => hls.loadSource(url), 3000);
+        }
+    });
 }
 
 function stop() {
     if (pollTimer) clearTimeout(pollTimer);
-    if (statsTimer) clearInterval(statsTimer);
     if (elapsedTimer) clearInterval(elapsedTimer);
     if (inputPC) { inputPC.close(); inputPC = null; }
     if (hls) { hls.destroy(); hls = null; }
@@ -475,15 +363,16 @@ function stop() {
     document.getElementById('inputStatus').textContent = 'STOPPED';
     document.getElementById('outputStatus').className = 'status-badge disconnected';
     document.getElementById('outputStatus').textContent = 'STOPPED';
-    
     document.getElementById('startBtn').style.display = 'block';
     document.getElementById('startBtn').disabled = false;
     document.getElementById('stopBtn').style.display = 'none';
+    streamId = null;
     
-    for (let i = 1; i <= 5; i++) setStage(i, '');
-    
-    log('Session stopped', 'info');
+    log('Stopped', 'info');
 }
+
+// Shuffle on load
+shufflePrompt();
 </script>
 </body>
 </html>
