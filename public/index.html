@@ -111,8 +111,8 @@
 <script>
 const API_KEY = 'sk_wdNUnsKxxwH6v64BHMwHaWT39Mhwk5ZrqZzXDRmAXxxAqCgVGusff2Y8jxiBofuP';
 const API_BASE = 'https://api.daydream.live/v1';
-// SDXL-turbo has capacity - SD-turbo is overloaded (confirmed by Daydream staff 1/28/2026)
-const PIPELINE_ID = 'pip_SDXL-turbo';
+// WORKING CONFIG FROM 3:20 PM 1/28 - this is when it actually looked like Krista's face!
+const PIPELINE_ID = 'pip_SDXL-turbo-faceid';
 
 let localStream, inputPC, streamId, playbackId, hls;
 let pollTimer, statsTimer, elapsedTimer;
@@ -310,16 +310,22 @@ async function updateStats() {
 }
 
 async function setParams() {
+    // EXACT WORKING CONFIG FROM COMMIT 41cccbc (3:20 PM 1/28/2026)
     const body = {
         model_id: "streamdiffusion",
         pipeline: "live-video-to-video",
         params: {
             model_id: "stabilityai/sdxl-turbo",
-            prompt: "baroque oil painting, dramatic chiaroscuro, Rembrandt style, golden light, rich textures",
-            negative_prompt: "blurry, low quality, modern, digital",
+            prompt: "baroque oil painting, dramatic chiaroscuro, Rembrandt style, golden light, rich textures, oil painting, traditional media, canvas texture, visible brushstrokes, masterpiece painting",
+            negative_prompt: "text, letters, words, spelling, low quality, blurry, cartoon, anime, manga, illustration, cgi, 3d render, digital art, comic, plastic, smooth skin, airbrushed, video game, unreal engine, octane render, vray, girl, model, babe, fairy, bride, princess",
             num_inference_steps: 4,
-            guidance_scale: 0,
-            seed: 42
+            guidance_scale: 1.5,
+            seed: 42,
+            ip_adapter: {
+                enabled: true,
+                scale: 1.0,
+                type: "faceid"
+            }
         }
     };
     
